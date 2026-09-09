@@ -23,8 +23,8 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "AIBN Chartered Accountants Ltd — Audit, Tax & Business Advisory",
-    template: "%s — AIBN Chartered Accountants Ltd",
+    default: "AIBN Chartered Accountants Ltd | Audit, Tax & Business Advisory",
+    template: "%s | AIBN Chartered Accountants Ltd",
   },
   description:
     "AIBN Chartered Accountants Ltd is a partner-led chartered accountancy practice. Audit, tax, bookkeeping, payroll and advisory for founders, family firms and growing teams.",

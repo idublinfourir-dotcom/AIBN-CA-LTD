@@ -4,7 +4,7 @@ import { Pool } from "pg";
 const globalForDb = globalThis as unknown as { pool?: Pool };
 
 // Lazily construct the Pool on first use. Importing this module must never
-// throw or open a connection — otherwise `next build` crashes while collecting
+// throw or open a connection, otherwise `next build` crashes while collecting
 // page data for static routes (e.g. /_not-found) that don't touch the DB.
 function getPool(): Pool {
   if (globalForDb.pool) return globalForDb.pool;

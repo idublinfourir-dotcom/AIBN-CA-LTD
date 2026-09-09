@@ -214,7 +214,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      {/* tier 1 — contact bar (navy, desktop only) */}
+      {/* tier 1: contact bar (navy, desktop only) */}
       <div className="hidden bg-navy-900 text-[13px] text-white/70 md:block">
         <div className="mx-auto flex h-10 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
           <div className="flex items-center gap-4">
@@ -248,7 +248,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         </div>
       </div>
 
-      {/* tier 2 — main nav (warm paper) */}
+      {/* tier 2: main nav (warm paper) */}
       <div
         className={`border-b backdrop-blur-md transition-all duration-300 ease-snappy ${
           scrolled
@@ -257,7 +257,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         }`}
       >
         {/* max-w-7xl: the nav row (logo + 6 links + sign-in + CTA) needs
-            ~1110px — it stopped fitting the 6xl container when the
+            ~1110px: it stopped fitting the 6xl container when the
             Entrepreneur Toolkits link was added. */}
         <nav
           aria-label="Main"
@@ -266,7 +266,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
           <Logo onClick={closeMobile} />
 
           {/* xl breakpoint: with "Entrepreneur Toolkits" the full nav no longer
-              fits at 1024px — below xl the hamburger menu takes over. */}
+              fits at 1024px: below xl the hamburger menu takes over. */}
           <div className="hidden items-center gap-6 xl:flex">
             {/* Services mega-menu (CSS hover + focus-within) */}
             <div

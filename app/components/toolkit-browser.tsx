@@ -2,7 +2,7 @@
 
 /* Founders Hub resource browser. The tab strip is a 1:1 visual copy of the
    Ireland-calculators switcher (calculator-tabs.tsx TabInner) so both hubs
-   share one design language — the only difference is these tabs switch a
+   share one design language: the only difference is these tabs switch a
    category client-side instead of navigating between routes.
 
    Nothing is downloadable here by design: every entry comes from the catalogue

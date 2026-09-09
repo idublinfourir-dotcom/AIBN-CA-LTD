@@ -4,7 +4,7 @@
    cost gives the gain; PPR relief, losses and the €1,270 exemption reduce it;
    the rate (33%, or 10% Entrepreneur Relief / 40% / 15%) gives the CGT due.
 
-   The rates and the indexation multiplier table are passed in as props — the
+   The rates and the indexation multiplier table are passed in as props: the
    server page reads them from Supabase (editable at /admin/cgt-rates) and falls
    back to the code defaults. All maths live in ../lib/ireland-cgt. */
 
@@ -40,7 +40,7 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-/* Checkbox that reveals an optional section — keeps the common case simple. */
+/* Checkbox that reveals an optional section: keeps the common case simple. */
 function SectionToggle({
   label,
   checked,

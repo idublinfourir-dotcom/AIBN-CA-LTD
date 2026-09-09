@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* Archivo's default ampersand is a calligraphic glyph that clashes with the
-   geometric display caps in headings. Serve a plain upright ampersand — subset
-   from Geist, the body font, to a single glyph (~1.3KB) — for U+0026 only; every
+   geometric display caps in headings. Serve a plain upright ampersand: subset
+   from Geist, the body font, to a single glyph (~1.3KB): for U+0026 only; every
    other glyph stays Archivo. Self-hosted so it satisfies the `font-src 'self'`
    CSP, and identical for every visitor (no system-font dependency). */
 @font-face {
@@ -19,7 +19,7 @@
 }
 
 @theme {
-  /* AIBN Chartered Accountants Ltd — vibrant white base + signal green (#26890d) accent, near-black ink */
+  /* AIBN Chartered Accountants Ltd: vibrant white base + signal green (#26890d) accent, near-black ink */
   --color-canvas: #ffffff;
   --color-surface: #ffffff;
   --color-surface-muted: #f2f6ef;
@@ -28,25 +28,25 @@
   --color-muted: #62686e;
   --color-line: #e2e4e5;
 
-  /* signal green — the one bold accent */
+  /* signal green: the one bold accent */
   --color-primary-50: #e8f3df;
   --color-primary-300: #6fae3d;
   --color-primary-400: #4f9e1f;
   --color-primary-500: #26890d;
   --color-primary-600: #1d6b09;
 
-  /* secondary — aligned to the #26890d green, grounds the brand */
+  /* secondary: aligned to the #26890d green, grounds the brand */
   --color-secondary-50: #eaf3e3;
   --color-secondary-400: #6fae3d;
   --color-secondary-500: #26890d;
   --color-secondary-600: #1d6b09;
 
-  /* charcoal — dark sections */
+  /* charcoal: dark sections */
   --color-navy-700: #2a2d31;
   --color-navy-800: #161719;
   --color-navy-900: #0b0b0c;
 
-  /* Strong custom easing (Emil Kowalski) — built-in curves are too weak */
+  /* Strong custom easing (Emil Kowalski): built-in curves are too weak */
   --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-fluid: cubic-bezier(0.77, 0, 0.175, 1);
 

@@ -42,7 +42,7 @@ test("Claim exactly at the threshold is still fully paid in year one", () => {
   assert.equal(r.paidInFullYearOne, true);
 });
 
-test("Medium claim — first instalment capped at the €87,500 threshold", () => {
+test("Medium claim: first instalment capped at the €87,500 threshold", () => {
   // spend 300k → credit 105k. 50% (52,500) < 87,500, so year1 = 87,500.
   const r = computeRdCredit(300_000);
   assert.equal(r.credit, 105_000);
@@ -53,7 +53,7 @@ test("Medium claim — first instalment capped at the €87,500 threshold", () =
   assertReconciles(r);
 });
 
-test("Large claim — resolves to the fixed 50% / 30% / 20% split", () => {
+test("Large claim: resolves to the fixed 50% / 30% / 20% split", () => {
   // spend 1,000,000 → credit 350,000. 50% (175,000) > 87,500 → year1 = 175,000.
   const r = computeRdCredit(1_000_000);
   assert.equal(r.credit, 350_000);
@@ -98,12 +98,12 @@ test("Reconciliation holds across awkward amounts", () => {
   }
 });
 
-test("Rounding — credit rounds to the cent", () => {
+test("Rounding: credit rounds to the cent", () => {
   const r = computeRdCredit(33_333.33); // 33,333.33 × 0.35 = 11,666.6655
   assert.equal(r.credit, 11_666.67);
 });
 
-test("Edge inputs — zero and negatives clamp to zero, no NaN", () => {
+test("Edge inputs: zero and negatives clamp to zero, no NaN", () => {
   const z = computeRdCredit(0);
   assert.equal(z.credit, 0);
   assert.deepEqual(z.instalments, { year1: 0, year2: 0, year3: 0 });
@@ -139,12 +139,12 @@ test("Custom config arg overrides the defaults", () => {
   assert.equal(round2(r.instalments.year1 + r.instalments.year2 + r.instalments.year3), r.credit);
 });
 
-test("parseRdConfig — valid blob round-trips", () => {
+test("parseRdConfig: valid blob round-trips", () => {
   const cfg = parseRdConfig(structuredClone(RD_CONFIG_DEFAULT));
   assert.deepEqual(cfg, RD_CONFIG_DEFAULT);
 });
 
-test("parseRdConfig — rejects bad / out-of-range / missing", () => {
+test("parseRdConfig: rejects bad / out-of-range / missing", () => {
   assert.equal(parseRdConfig(null), null);
   assert.equal(parseRdConfig({ ratePercent: 35 }), null); // missing fields
   assert.equal(parseRdConfig({ ...RD_CONFIG_DEFAULT, ratePercent: 250 }), null); // range

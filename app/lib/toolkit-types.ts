@@ -1,4 +1,4 @@
-/* Toolkit categories, labels and slugs — PURE module, no DB imports, safe to
+/* Toolkit categories, labels and slugs: PURE module, no DB imports, safe to
    import from client components. The resources themselves are a static
    catalogue in toolkit-content.ts: no file is ever uploaded or hosted, every
    copy is emailed by hand after a request. */

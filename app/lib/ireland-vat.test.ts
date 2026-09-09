@@ -23,7 +23,7 @@ function assertReconciles(b: VatBreakdown) {
   assert.equal(round2(b.net + b.vat), b.gross, "net + vat must equal gross");
 }
 
-test("Add VAT — €100 net at each statutory rate", () => {
+test("Add VAT: €100 net at each statutory rate", () => {
   assert.deepEqual(addVat(100, 23), { net: 100, vat: 23, gross: 123, percent: 23 });
   assert.deepEqual(addVat(100, 13.5), { net: 100, vat: 13.5, gross: 113.5, percent: 13.5 });
   assert.deepEqual(addVat(100, 9), { net: 100, vat: 9, gross: 109, percent: 9 });
@@ -31,7 +31,7 @@ test("Add VAT — €100 net at each statutory rate", () => {
   assert.deepEqual(addVat(100, 0), { net: 100, vat: 0, gross: 100, percent: 0 });
 });
 
-test("Remove VAT — inverse of Add VAT at each rate returns €100 net", () => {
+test("Remove VAT: inverse of Add VAT at each rate returns €100 net", () => {
   assert.deepEqual(removeVat(123, 23), { net: 100, vat: 23, gross: 123, percent: 23 });
   assert.deepEqual(removeVat(113.5, 13.5), { net: 100, vat: 13.5, gross: 113.5, percent: 13.5 });
   assert.deepEqual(removeVat(109, 9), { net: 100, vat: 9, gross: 109, percent: 9 });
@@ -39,7 +39,7 @@ test("Remove VAT — inverse of Add VAT at each rate returns €100 net", () => 
   assert.deepEqual(removeVat(100, 0), { net: 100, vat: 0, gross: 100, percent: 0 });
 });
 
-test("Rounding reconciles to the cent — awkward amounts", () => {
+test("Rounding reconciles to the cent: awkward amounts", () => {
   // 100 gross @ 23% → net 81.30, vat 18.70 (derived by subtraction).
   const r = removeVat(100, 23);
   assert.equal(r.net, 81.3);
@@ -62,14 +62,14 @@ test("Reconciliation holds for every rate, both directions", () => {
   }
 });
 
-test("Edge inputs — zero and negative clamp to zero", () => {
+test("Edge inputs: zero and negative clamp to zero", () => {
   assert.deepEqual(addVat(0, 23), { net: 0, vat: 0, gross: 0, percent: 23 });
   assert.deepEqual(removeVat(0, 23), { net: 0, vat: 0, gross: 0, percent: 23 });
   assert.deepEqual(addVat(-500, 23), { net: 0, vat: 0, gross: 0, percent: 23 });
   assert.deepEqual(removeVat(-500, 23), { net: 0, vat: 0, gross: 0, percent: 23 });
 });
 
-test("Net position — more output than input VAT → payable to Revenue", () => {
+test("Net position: more output than input VAT → payable to Revenue", () => {
   assert.deepEqual(vatPosition(2_000, 500), {
     outputVat: 2_000,
     inputVat: 500,
@@ -78,7 +78,7 @@ test("Net position — more output than input VAT → payable to Revenue", () =>
   });
 });
 
-test("Net position — more input than output VAT → receivable from Revenue", () => {
+test("Net position: more input than output VAT → receivable from Revenue", () => {
   // Paid €2.5M VAT on purchases, charged €2M on sales → €0.5M back.
   assert.deepEqual(vatPosition(2_000_000, 2_500_000), {
     outputVat: 2_000_000,
@@ -88,7 +88,7 @@ test("Net position — more input than output VAT → receivable from Revenue", 
   });
 });
 
-test("Net position — equal totals balance to zero", () => {
+test("Net position: equal totals balance to zero", () => {
   assert.deepEqual(vatPosition(1_234.56, 1_234.56), {
     outputVat: 1_234.56,
     inputVat: 1_234.56,
@@ -97,7 +97,7 @@ test("Net position — equal totals balance to zero", () => {
   });
 });
 
-test("Net position — composed from add/remove VAT, nets to the cent", () => {
+test("Net position: composed from add/remove VAT, nets to the cent", () => {
   // Sold €10,000 net @ 23%; bought €5,000 gross @ 13.5%.
   const output = addVat(10_000, 23).vat; // 2,300.00
   const input = removeVat(5_000, 13.5).vat; // 594.71
@@ -107,7 +107,7 @@ test("Net position — composed from add/remove VAT, nets to the cent", () => {
   assert.equal(pos.direction, "payable");
 });
 
-test("Net position — zero and negative inputs clamp to zero", () => {
+test("Net position: zero and negative inputs clamp to zero", () => {
   assert.deepEqual(vatPosition(0, 0), {
     outputVat: 0,
     inputVat: 0,
@@ -143,7 +143,7 @@ test("getVatRate resolves against a passed-in rate table", () => {
   assert.equal(getVatRate("standard", custom).percent, 24);
 });
 
-test("parseVatConfig — the code default round-trips", () => {
+test("parseVatConfig: the code default round-trips", () => {
   const cfg = parseVatConfig(structuredClone(VAT_CONFIG_DEFAULT));
   assert.notEqual(cfg, null);
   if (cfg) {
@@ -152,7 +152,7 @@ test("parseVatConfig — the code default round-trips", () => {
   }
 });
 
-test("parseVatConfig — rejects bad blobs", () => {
+test("parseVatConfig: rejects bad blobs", () => {
   assert.equal(parseVatConfig(null), null);
   assert.equal(parseVatConfig({ rates: [], thresholds: { goods: 1, services: 1, since: "x" } }), null); // missing keys
   const missingThreshold = structuredClone(VAT_CONFIG_DEFAULT) as unknown as Record<string, unknown>;

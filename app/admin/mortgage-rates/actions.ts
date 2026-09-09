@@ -182,7 +182,7 @@ export async function saveProduct(
     }
   } catch (err) {
     console.error("[mortgage-rates] save failed:", err);
-    return { status: "error", message: "Could not save — check the values." };
+    return { status: "error", message: "Could not save. Check the values." };
   }
 
   revalidate();

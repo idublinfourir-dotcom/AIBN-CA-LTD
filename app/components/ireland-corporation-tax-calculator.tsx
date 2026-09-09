@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland Corporation Tax calculator — trading (12.5%) and passive (25%). The
+/* Ireland Corporation Tax calculator: trading (12.5%) and passive (25%). The
    user classifies which income is which; this component never guesses. The
    editable rates arrive as `config` (admin-editable, DB-backed with a code
    fallback); the maths + statute notes live in ../lib/ireland-corporation-tax
@@ -181,7 +181,7 @@ export function IrelandCorporationTaxCalculator({ config }: { config: CtConfig }
           </dl>
         </div>
 
-        {/* Pillar Two — info note, never a live input (read from config) */}
+        {/* Pillar Two: info note, never a live input (read from config) */}
         <div className="mt-5 border border-line bg-surface p-5">
           <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
             Large groups: Pillar Two

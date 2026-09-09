@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────────────────────────────────
    Ireland Capital Gains Tax (CGT) calculator.
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
+   PURE FUNCTIONS ONLY, no React, no I/O, so every figure is unit-testable.
    The rates/thresholds and the indexation multiplier table here are the CODE
    FALLBACK: the live values are stored in Supabase (cgt_settings +
    cgt_multipliers) and edited from /admin/cgt-rates. cgt-data.ts reads the DB
@@ -20,7 +20,7 @@
 
    INDEXATION RELIEF ("the government fixed rate")
      The cost of a pre-2003 asset is uplifted by Revenue's multiplier for the
-     year the cost was incurred. Indexation is FROZEN — it only applies to
+     year the cost was incurred. Indexation is FROZEN: it only applies to
      expenditure up to 31 Dec 2002; the multiplier for 2003 onward is 1.000
      (no uplift). Pre-6 April 1974 uses the 1974/75 factor (7.528).
 
@@ -35,9 +35,9 @@
    - PPR proportional relief (last 12 months deemed occupation):
        revenue.ie/en/gains-gifts-and-inheritance/cgt-reliefs/principal-private-residence-relief
 
-   Figures are ESTIMATES for guidance only — not tax advice.
+   Figures are ESTIMATES for guidance only, not tax advice.
 
-   ── NOT MODELLED (deliberate — do NOT silently fold in) ──
+   ── NOT MODELLED (deliberate: do NOT silently fold in) ──
    - Retirement relief (age 55+, €750k/€500k thresholds, family transfers).
    - Development-land current-use-value indexation restriction.
    - Share disposals: FIFO / "bed & breakfast" 4-week matching rules.
@@ -118,7 +118,7 @@ export interface CgtMultiplier {
   multiplier: number;
 }
 
-/* Revenue CGT Multiplier Table — the frozen "31 Dec 2004 et seq" column, used
+/* Revenue CGT Multiplier Table: the frozen "31 Dec 2004 et seq" column, used
    for every disposal on or after 1 January 2004 (i.e. all current disposals). */
 export const CGT_MULTIPLIERS_DEFAULT: CgtMultiplier[] = [
   { yearKey: "1974-75", yearLabel: "1974/75 or earlier", sortOrder: 0, multiplier: 7.528 },
@@ -162,7 +162,7 @@ export function slugifyYearKey(label: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-/** True when the rates were last reviewed more than `months` ago — drives the
+/** True when the rates were last reviewed more than `months` ago: drives the
     admin "review due" reminder. null (unknown) → not due, so a DB blip doesn't nag. */
 export function isReviewDue(reviewedAt: string | null, now: number = Date.now(), months = 12): boolean {
   if (!reviewedAt) return false;
@@ -186,7 +186,7 @@ export interface CgtTaxBand {
 
 export interface CgtInput {
   proceeds: number;
-  /** Incidental costs of disposal (selling fees) — never indexed. */
+  /** Incidental costs of disposal (selling fees), never indexed. */
   disposalCosts: number;
   /** Acquisition cost incl. incidental buying costs. */
   acquisitionCost: number;
@@ -257,7 +257,7 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
   const allowableCost = round2(indexedAcquisition + indexedEnhancement + disposalCosts);
   const rawGain = round2(proceeds - allowableCost);
 
-  // PPR relief — proportional, positive gains only. The final 12 months count
+  // PPR relief: proportional, positive gains only. The final 12 months count
   // as occupation ONLY if the property was a PPR at some point.
   let pprRelief = 0;
   let exemptFraction = 0;
@@ -286,7 +286,7 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
     lossCarried = round2(losses - lossesApplied);
   }
 
-  // Personal exemption — can't create or augment a loss.
+  // Personal exemption: can't create or augment a loss.
   const exemption = input.applyExemption ? config.annualExemptionEur : 0;
   const exemptionApplied =
     gainAfterLosses > 0 ? round2(Math.min(exemption, gainAfterLosses)) : 0;

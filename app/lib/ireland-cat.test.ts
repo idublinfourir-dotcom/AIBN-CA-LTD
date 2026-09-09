@@ -28,7 +28,7 @@ const base: CatInput = {
   valuationMonth: 6,
 };
 
-test("group derivation — child A, sibling/niece/grandchild B, cousin C", () => {
+test("group derivation: child A, sibling/niece/grandchild B, cousin C", () => {
   assert.equal(groupFor("child", "gift"), "A");
   assert.equal(groupFor("sibling", "inheritance"), "B");
   assert.equal(groupFor("niece-nephew", "gift"), "B");
@@ -38,7 +38,7 @@ test("group derivation — child A, sibling/niece/grandchild B, cousin C", () =>
   assert.equal(groupFor("other", "gift"), "C");
 });
 
-test("parent flips group by benefit type — gift B, inheritance A", () => {
+test("parent flips group by benefit type: gift B, inheritance A", () => {
   assert.equal(groupFor("parent", "gift"), "B");
   assert.equal(groupFor("parent", "inheritance"), "A");
 });
@@ -53,7 +53,7 @@ test("threshold + relief lookups read the config", () => {
   assert.equal(reliefPercentFor("none", CAT_CONFIG_DEFAULT), 0);
 });
 
-test("Revenue 'Claire' — Group A, prior €365k, current €40k → excess €5,000", () => {
+test("Revenue 'Claire': Group A, prior €365k, current €40k → excess €5,000", () => {
   const r = computeCat(
     { ...base, benefitType: "inheritance", relationship: "child",
       marketValue: 40_000, applySmallGiftExemption: false, priorBenefits: 365_000 },
@@ -76,7 +76,7 @@ test("CitizensInfo house gift €620k Group A → €71,610", () => {
   assert.equal(r.catDue, 71_610);
 });
 
-test("small gift exemption — inheritance never gets it; toggle off skips it", () => {
+test("small gift exemption: inheritance never gets it; toggle off skips it", () => {
   const inh = computeCat({ ...base, benefitType: "inheritance", marketValue: 10_000 }, CAT_CONFIG_DEFAULT);
   assert.equal(inh.smallGiftExemptionApplied, 0);
   const off = computeCat({ ...base, benefitType: "gift", marketValue: 10_000, applySmallGiftExemption: false }, CAT_CONFIG_DEFAULT);
@@ -131,7 +131,7 @@ test("prior benefits over threshold → whole current benefit taxable", () => {
   assert.equal(r.catDue, 6_600);
 });
 
-test("payment due — valuation month drives the deadline", () => {
+test("payment due: valuation month drives the deadline", () => {
   assert.equal(computeCat({ ...base, valuationMonth: 3 }, CAT_CONFIG_DEFAULT).paymentDue, "31 October (same year)");
   assert.equal(computeCat({ ...base, valuationMonth: 8 }, CAT_CONFIG_DEFAULT).paymentDue, "31 October (same year)");
   assert.equal(computeCat({ ...base, valuationMonth: 9 }, CAT_CONFIG_DEFAULT).paymentDue, "31 October (following year)");
@@ -146,7 +146,7 @@ test("negative / zero inputs clamp to zero (no negative tax)", () => {
   assert.equal(r.catDue, 0);
 });
 
-test("effective rate — tax over the full current taxable value", () => {
+test("effective rate: tax over the full current taxable value", () => {
   const r = computeCat(
     { ...base, benefitType: "inheritance", relationship: "child",
       marketValue: 800_000, applySmallGiftExemption: false },
@@ -162,7 +162,7 @@ test("round2 absorbs binary-float error", () => {
   assert.equal(round2(0.1 + 0.2), 0.3);
 });
 
-test("parseCatConfig — code default round-trips", () => {
+test("parseCatConfig: code default round-trips", () => {
   const cfg = parseCatConfig(structuredClone(CAT_CONFIG_DEFAULT));
   assert.notEqual(cfg, null);
   if (cfg) {
@@ -172,7 +172,7 @@ test("parseCatConfig — code default round-trips", () => {
   }
 });
 
-test("parseCatConfig — rejects bad blobs", () => {
+test("parseCatConfig: rejects bad blobs", () => {
   assert.equal(parseCatConfig(null), null);
   assert.equal(parseCatConfig({}), null);
   const noReliefs = structuredClone(CAT_CONFIG_DEFAULT) as unknown as Record<string, unknown>;

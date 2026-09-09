@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createClient } from "../lib/supabase/client";
 
-/** "Continue with Google" — starts the Supabase OAuth (PKCE) flow. */
+/** "Continue with Google": starts the Supabase OAuth (PKCE) flow. */
 export function GoogleButton() {
   const [loading, setLoading] = useState(false);
 

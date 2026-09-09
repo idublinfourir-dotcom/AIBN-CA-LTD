@@ -13,7 +13,7 @@ import {
   CT_CONFIG_DEFAULT,
 } from "./ireland-corporation-tax.ts";
 
-test("Trading only — 12.5%", () => {
+test("Trading only: 12.5%", () => {
   const r = computeCorporationTax({ tradingProfit: 100_000, passiveIncome: 0 });
   assert.equal(r.tradingTax, 12_500);
   assert.equal(r.passiveTax, 0);
@@ -21,7 +21,7 @@ test("Trading only — 12.5%", () => {
   assert.equal(r.effectiveRate, 0.125);
 });
 
-test("Passive only — 25%", () => {
+test("Passive only: 25%", () => {
   const r = computeCorporationTax({ tradingProfit: 0, passiveIncome: 100_000 });
   assert.equal(r.passiveTax, 25_000);
   assert.equal(r.tradingTax, 0);
@@ -29,7 +29,7 @@ test("Passive only — 25%", () => {
   assert.equal(r.effectiveRate, 0.25);
 });
 
-test("Mixed — two streams, blended effective rate", () => {
+test("Mixed: two streams, blended effective rate", () => {
   // 200k trading + 50k passive = 250k base.
   const r = computeCorporationTax({ tradingProfit: 200_000, passiveIncome: 50_000 });
   assert.equal(r.tradingTax, 25_000); // 200k × 12.5%
@@ -39,24 +39,24 @@ test("Mixed — two streams, blended effective rate", () => {
   assert.equal(r.effectiveRate, 37_500 / 250_000); // = 15%
 });
 
-test("Equal split — trading + passive blends to 18.75%", () => {
+test("Equal split: trading + passive blends to 18.75%", () => {
   const r = computeCorporationTax({ tradingProfit: 100_000, passiveIncome: 100_000 });
   assert.equal(r.totalTax, 37_500);
   assert.equal(r.effectiveRate, 0.1875);
 });
 
-test("Rounding — tax rounds to the cent", () => {
+test("Rounding: tax rounds to the cent", () => {
   const r = computeCorporationTax({ tradingProfit: 12_345.67, passiveIncome: 0 });
   assert.equal(r.tradingTax, 1_543.21); // 12,345.67 × 0.125 = 1,543.20875
 });
 
-test("Edge inputs — zero base gives no divide-by-zero", () => {
+test("Edge inputs: zero base gives no divide-by-zero", () => {
   const r = computeCorporationTax({ tradingProfit: 0, passiveIncome: 0 });
   assert.equal(r.totalTax, 0);
   assert.equal(r.effectiveRate, 0); // not NaN
 });
 
-test("Edge inputs — negatives clamp to zero", () => {
+test("Edge inputs: negatives clamp to zero", () => {
   const r = computeCorporationTax({ tradingProfit: -100_000, passiveIncome: -5_000 });
   assert.equal(r.tradingProfit, 0);
   assert.equal(r.passiveIncome, 0);
@@ -83,12 +83,12 @@ test("Custom config arg overrides the defaults", () => {
   assert.equal(r.totalTax, 45_000);
 });
 
-test("parseCorporationTaxConfig — valid blob round-trips", () => {
+test("parseCorporationTaxConfig: valid blob round-trips", () => {
   const cfg = parseCorporationTaxConfig({ tradingPercent: 10, passivePercent: 20 });
   assert.deepEqual(cfg, { tradingPercent: 10, passivePercent: 20 });
 });
 
-test("parseCorporationTaxConfig — rejects bad / out-of-range / missing", () => {
+test("parseCorporationTaxConfig: rejects bad / out-of-range / missing", () => {
   assert.equal(parseCorporationTaxConfig(null), null);
   assert.equal(parseCorporationTaxConfig({ tradingPercent: 12.5 }), null); // missing passive
   assert.equal(parseCorporationTaxConfig({ tradingPercent: "12.5", passivePercent: 25 }), null); // string

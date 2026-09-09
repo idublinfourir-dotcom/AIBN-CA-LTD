@@ -2,7 +2,7 @@
    Reads the per-year rate config from Postgres (tax_rates, one JSONB row per
    tax year, editable in /admin/tax-rates); falls back to the versioned
    RATES_<year> configs in ireland-income-tax.ts when the DB is unreachable,
-   the row is missing, or the stored JSON fails validation — so the calculator
+   the row is missing, or the stored JSON fails validation, so the calculator
    never renders with broken numbers.
 
    JSON has no Infinity: the open-ended upper bound of the last USC band and
@@ -158,7 +158,7 @@ export async function getTaxRates(): Promise<Record<number, YearRates>> {
     for (const row of rows) {
       const parsed = parseYearRates(row.year, row.rates);
       if (parsed) out[row.year] = parsed;
-      else console.error(`[tax] stored rates for ${row.year} failed validation — using fallback`);
+      else console.error(`[tax] stored rates for ${row.year} failed validation; using fallback`);
     }
     return out;
   } catch (err) {

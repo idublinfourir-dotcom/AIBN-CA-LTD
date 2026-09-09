@@ -35,7 +35,7 @@ const LIMITS = { name: 120, phone: 40, email: 254, website: 200, purpose: 1000 }
 /**
  * Normalise an organisation website. People type "acme.ie" far more often than
  * "https://acme.ie", so the scheme is optional on the way in and always present
- * on the way out. Only http(s) is ever returned — the admin list renders this
+ * on the way out. Only http(s) is ever returned: the admin list renders this
  * as a clickable link, so a `javascript:` or `data:` value must never survive.
  * Returns null when it is not a usable address.
  */

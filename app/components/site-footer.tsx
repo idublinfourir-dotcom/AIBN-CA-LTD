@@ -2,7 +2,7 @@ import Link from "next/link";
 import { serviceCategories, site } from "../lib/content";
 import { images } from "../lib/images";
 
-/* Pricing link hidden site-wide for now — see app/_pricing. */
+/* Pricing link hidden site-wide for now: see app/_pricing. */
 const firmLinks = [
   { label: "Services", href: "/services" },
   { label: "About the firm", href: "/about" },
@@ -14,7 +14,7 @@ const firmLinks = [
 export function SiteFooter() {
   return (
     <footer className="relative isolate overflow-hidden bg-navy-900 text-white">
-      {/* photographic backdrop — Irish countryside at dusk */}
+      {/* photographic backdrop: Irish countryside at dusk */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-55"

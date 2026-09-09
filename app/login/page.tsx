@@ -25,7 +25,7 @@ export default async function LoginPage({
       <PageHero
         eyebrow="Client area"
         title="Sign in."
-        lede="Access your AIBN Chartered Accountants Ltd client area. A partner-led practice: your books, in one place."
+        lede="Access your AIBN Chartered Accountants Ltd client area, where your books, your filings and your enquiries all sit in one place."
         image="tower"
       />
       <Container className="py-16 sm:py-20">

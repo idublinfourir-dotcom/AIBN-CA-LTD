@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 
 /**
  * Global top progress bar. Appears the moment an internal link is clicked and
- * completes when the new route renders — so every navigation (nav links, the
+ * completes when the new route renders, so every navigation (nav links, the
  * account pill, CTAs) shows immediate "it's loading" feedback, even while a
  * server layout/page is still resolving.
  *
  * The bar starts optimistically on click and normally finishes when `pathname`
- * changes. But some clicks never change the pathname — a navigation that's
+ * changes. But some clicks never change the pathname: a navigation that's
  * prevented, aborted, redirects back to the same path, or hangs. Those used to
  * leave the bar stuck at 90% forever (the pathname-change effect was the ONLY
  * thing that hid it). A FAILSAFE timer now force-finishes the bar so it can

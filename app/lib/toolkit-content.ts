@@ -1,5 +1,5 @@
 /* The Founders Hub catalogue: every memo, template, tax/VAT form and setup
-   guide the firm offers. This file IS the library — no file is uploaded or
+   guide the firm offers. This file IS the library; no file is uploaded or
    hosted anywhere. A visitor requests a copy, and a team member emails it from
    their own mailbox (see /admin/toolkits). PURE module, no DB imports, so the
    public browser can import it directly. Adding a resource = adding an entry
@@ -38,7 +38,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
   {
     category: "memo",
     format: "PDF",
-    title: "Director's loan account memo",
+    title: "Director’s loan account memo",
     description:
       "Borrowing from your own company: close-company loan rules, benefit-in-kind exposure and how to clear a loan account cleanly.",
   },
@@ -89,7 +89,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
     framework: "FRS 101",
     title: "Financial statements template (Word)",
     description:
-      "Full statutory financial statements shell under FRS 101, formatted and ready for the year's numbers.",
+      "Full statutory financial statements shell under FRS 101, formatted and ready for the year’s numbers.",
   },
   {
     category: "template",
@@ -129,7 +129,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
     framework: "IFRS",
     title: "IFRS disclosure checklist",
     description:
-      "Disclosure checklist for IFRS financial statements: work through it to make sure nothing's missed.",
+      "Disclosure checklist for IFRS financial statements: work through it to make sure nothing’s missed.",
   },
   {
     category: "template",
@@ -146,7 +146,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
     format: "PDF",
     title: "TR1: registering as a sole trader or partnership",
     description:
-      "Walkthrough of Revenue's TR1 registration: which taxes to tick, common errors and what to have ready.",
+      "Walkthrough of Revenue’s TR1 registration: which taxes to tick, common errors and what to have ready.",
   },
   {
     category: "tax-form",
@@ -183,7 +183,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
     format: "PDF",
     title: "Annual Return of Trading Details (RTD) checklist",
     description:
-      "How to reconcile the year's VAT rates for the RTD without a last-minute scramble.",
+      "How to reconcile the year’s VAT rates for the RTD without a last-minute scramble.",
   },
   {
     category: "vat-form",
@@ -225,7 +225,7 @@ export const STARTER_RESOURCES: StarterResource[] = [
   {
     category: "guide",
     format: "PDF",
-    title: "Accountant's year-end closing checklist",
+    title: "Accountant’s year-end closing checklist",
     description:
       "The year-end close, step by step: accruals, reconciliations and the file every set of accounts should carry.",
   },

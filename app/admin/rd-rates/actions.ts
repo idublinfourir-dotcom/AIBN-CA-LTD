@@ -42,14 +42,14 @@ export async function saveRdSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only.
+  // Phase 2. Confirm: write the previewed payload only.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const v = validateRdConfig(parsed as never);
     if (!v.ok) return { status: "error", message: v.message };
@@ -57,7 +57,7 @@ export async function saveRdSettings(
       await saveCalculatorConfig(RD_SETTINGS_KEY, v.value);
     } catch (err) {
       console.error("[rd] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "rd-credit-settings",
@@ -70,7 +70,7 @@ export async function saveRdSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview.
+  // Phase 1: preview.
   const v = validateRdConfig({
     ratePercent: num(formData.get("rate")),
     tradingDeductionPercent: num(formData.get("trading_deduction")),

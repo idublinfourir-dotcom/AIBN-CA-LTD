@@ -1,4 +1,4 @@
-/* Server-side guardrails for R&D tax credit admin edits. PURE — reject
+/* Server-side guardrails for R&D tax credit admin edits. PURE: reject
    clearly-wrong values with a message; the two-step preview is the guard
    against subtle mistakes. Mirrors cgt-guardrails.ts (type-only import). */
 

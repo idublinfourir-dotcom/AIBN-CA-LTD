@@ -2,7 +2,7 @@
 
 /* Deloitte-Ireland-style Income Tax Calculator (Income Tax + USC + PRSI).
    Form → "Calculate Tax" → results screen (2026 vs 2025), in the site theme.
-   All maths lives in ../lib/ireland-income-tax. Tax only — no mortgage here. */
+   All maths lives in ../lib/ireland-income-tax. Tax only, no mortgage here. */
 
 import { useEffect, useId, useRef, useState } from "react";
 import {
@@ -102,7 +102,7 @@ function YesNoField({
 /* Numeric field with a local text buffer. Echoing String(parsedNumber) straight
    back into a controlled <input type="number"> destroys decimal entry: "5." is
    sanitised to "" mid-keystroke, "5.50" snaps back to "5.5" and moves the
-   cursor, and a leading 0 renders as empty — so a user typing 5.5 could end up
+   cursor, and a leading 0 renders as empty, so a user typing 5.5 could end up
    with 55. The buffer holds exactly what was typed; the parent only receives
    the parsed number, and the buffer re-syncs only when the parent value is
    changed externally (e.g. Clear Form). */
@@ -453,7 +453,7 @@ export function IrelandIncomeTaxCalculator({
               label="Spouse self-employment / other income"
               value={form.spouseSelfEmploymentOrOtherIncome ?? 0}
               onChange={(v) => set("spouseSelfEmploymentOrOtherIncome", v)}
-              hint="Married couples are jointly assessed: a second income raises the 20% band by up to €35,000."
+              hint="Married couples are jointly assessed, and a second income raises the 20% band by up to €35,000."
             />
           </>
         )}
@@ -462,7 +462,7 @@ export function IrelandIncomeTaxCalculator({
           label="Your pension contribution"
           value={form.pensionContribution}
           onChange={(v) => set("pensionContribution", v)}
-          hint="Relief is capped by your age band and €115,000 of earnings: any excess gets no relief."
+          hint="Relief is capped by your age band and by €115,000 of earnings. Anything above that gets no relief."
         />
       </div>
 

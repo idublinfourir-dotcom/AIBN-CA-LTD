@@ -1,13 +1,13 @@
 "use client";
 
-/* Ireland VAT calculator — a business's net VAT position, as on the VAT3
+/* Ireland VAT calculator: a business's net VAT position, as on the VAT3
    return. Two INPUT tabs, one per side:
-   • VAT received — VAT you charge customers on SALES (output VAT, T1).
-   • VAT paid     — VAT you pay suppliers on PURCHASES (input VAT, T2).
+   • VAT received: VAT you charge customers on SALES (output VAT, T1).
+   • VAT paid:     VAT you pay suppliers on PURCHASES (input VAT, T2).
    The category dropdown mirrors across the tabs ("what you buy" defaults to
    "what you sell") but is independently changeable. Amounts are per side.
 
-   The RESULT (right) is not a tab — it computes the verdict from both sides:
+   The RESULT (right) is not a tab. It computes the verdict from both sides:
    received > paid → PAYABLE; paid > received → RECEIVABLE (e.g. KFC: €2.5M
    paid vs €2M received → €0.5M receivable).
    All maths + rates live in ../lib/ireland-vat (single source of truth). */
@@ -88,7 +88,7 @@ function CategorySelect({
   );
 }
 
-/* ---------- net position verdict (computed — not a tab) ---------- */
+/* ---------- net position verdict (computed, not a tab) ---------- */
 
 function VerdictCard({ pos }: { pos: VatPosition }) {
   const { outputVat: received, inputVat: paid, netVat, direction } = pos;
@@ -97,19 +97,19 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
     payable: {
       tag: { text: "Payable", cls: "bg-navy-900 text-white" },
       eyebrow: "VAT payable",
-      sub: "payable to Revenue for the period: you received more VAT on sales than you paid on purchases.",
+      sub: "payable to Revenue for the period, because you received more VAT on sales than you paid on purchases.",
       netLabel: "Net VAT payable (T3)",
     },
     receivable: {
       tag: { text: "Receivable", cls: "bg-primary-500 text-white" },
       eyebrow: "VAT receivable",
-      sub: "receivable from Revenue for the period: you paid more VAT on purchases than you received on sales.",
+      sub: "receivable from Revenue for the period, because you paid more VAT on purchases than you received on sales.",
       netLabel: "Net VAT repayable (T4)",
     },
     balanced: {
       tag: { text: "Balanced", cls: "border border-line bg-surface-muted text-muted" },
       eyebrow: "VAT position",
-      sub: "VAT received and VAT paid are equal: nothing due either way.",
+      sub: "VAT received and VAT paid are equal, so nothing is due either way.",
       netLabel: "Net VAT position",
     },
   }[direction];
@@ -242,7 +242,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
-      {/* inputs — tabbed by side */}
+      {/* inputs: tabbed by side */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
           <span className="font-semibold text-ink">How VAT settles.</span> Fill both
@@ -405,7 +405,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
         </div>
       </div>
 
-      {/* result — computed verdict */}
+      {/* result: computed verdict */}
       <div className="flex flex-col">
         <VerdictCard pos={pos} />
         <ThresholdsCard thresholds={thresholds} />

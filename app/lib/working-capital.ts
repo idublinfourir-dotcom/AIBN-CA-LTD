@@ -1,18 +1,18 @@
 /* ──────────────────────────────────────────────────────────────────────────
    Working Capital calculator (finance, not tax).
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
+   PURE FUNCTIONS ONLY, no React, no I/O, so every figure is unit-testable.
 
-   These are STANDARD financial-analysis definitions, not Revenue tax figures —
+   These are STANDARD financial-analysis definitions, not Revenue tax figures:
    there are no statutory "rates" to source:
      • Working capital   = current assets − current liabilities
      • Current ratio     = current assets ÷ current liabilities
      • Quick ratio       = (current assets − inventory) ÷ current liabilities
-                           (the acid test — excludes stock, the least liquid
+                           (the acid test: excludes stock, the least liquid
                            current asset)
 
    Interpretation of the ratios (healthy vs tight) is a rule of thumb and
-   varies by industry and season — the UI states that.
+   varies by industry and season: the UI states that.
    ────────────────────────────────────────────────────────────────────────── */
 
 /** Round to 2 decimal places, absorbing binary-float error. */
@@ -25,7 +25,7 @@ export type WcDirection = "surplus" | "deficit" | "balanced";
 export interface WorkingCapitalInput {
   currentAssets: number;
   currentLiabilities: number;
-  /** Optional — enables the quick (acid-test) ratio. */
+  /** Optional: enables the quick (acid-test) ratio. */
   inventory?: number;
 }
 

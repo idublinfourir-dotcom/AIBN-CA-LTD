@@ -7,7 +7,7 @@ export type HeroClip = { src: string; poster: string };
 /**
  * Full-bleed hero background that cross-fades through a list of muted clips,
  * one after another, looping. Muted + playsInline so mobile autoplay is
- * allowed. Reduced-motion users get a single static poster — no playback,
+ * allowed. Reduced-motion users get a single static poster, no playback,
  * no rotation.
  */
 export function HeroVideo({

@@ -2,7 +2,7 @@
    Thin typed wrapper over the shared getCalculatorConfig: reads the editable
    asset-class rates/years + the two scalars (calculator_settings, key
    'capital-allowances'); falls back to CA_CONFIG_DEFAULT when the row is absent,
-   invalid, or the DB is unreachable — so the calculator never renders broken
+   invalid, or the DB is unreachable, so the calculator never renders broken
    numbers. Never throws.
 
    The CO2 emissions groups + CAR_2027_NOTE stay in code and are imported

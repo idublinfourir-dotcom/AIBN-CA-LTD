@@ -1,10 +1,10 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Ireland VAT calculator — Add VAT (net → gross), Remove VAT (gross → net)
+   Ireland VAT calculator: Add VAT (net → gross), Remove VAT (gross → net)
    and the net VAT position (output VAT on sales − input VAT on purchases →
    payable to / receivable from Revenue, as on the VAT3 return).
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
-   The editable rates + thresholds live in VAT_CONFIG_DEFAULT below — the single
+   PURE FUNCTIONS ONLY, no React, no I/O, so every figure is unit-testable.
+   The editable rates + thresholds live in VAT_CONFIG_DEFAULT below: the single
    code source of truth (VAT_RATES / VAT_THRESHOLDS are derived from it). It is
    the fallback used when no DB row exists; when an admin saves, the loader
    passes the stored config to the component. The compute fns already take the
@@ -16,7 +16,7 @@
    - Registration thresholds:
                      revenue.ie/en/vat/who-must-register-for-vat/vat-thresholds
 
-   Figures are ESTIMATES for guidance only — not tax advice. Confirm with a
+   Figures are ESTIMATES for guidance only, not tax advice. Confirm with a
    qualified adviser or revenue.ie before acting on any number.
    ────────────────────────────────────────────────────────────────────────── */
 
@@ -60,7 +60,7 @@ export interface VatConfig {
 }
 
 /** Editable rates + thresholds: the code fallback AND the shape the admin edits.
-    Single source — VAT_RATES / VAT_THRESHOLDS below are derived from this. */
+    Single source: VAT_RATES / VAT_THRESHOLDS below are derived from this. */
 export const VAT_CONFIG_DEFAULT: VatConfig = {
   // Order = selector order.
   rates: [
@@ -96,14 +96,14 @@ export const VAT_CONFIG_DEFAULT: VatConfig = {
       applies: "Most food, children's clothing/footwear, oral medicines, exports",
     },
   ],
-  // A rise to €100k / €50k has been discussed but is NOT law — do not use it.
+  // A rise to €100k / €50k has been discussed but is NOT law: do not use it.
   thresholds: { goods: 85_000, services: 42_500, since: "1 January 2025" },
 };
 
 /* One source of truth for the rate table. Order = selector order. */
 export const VAT_RATES: VatRate[] = VAT_CONFIG_DEFAULT.rates;
 
-/** The five statutory rate keys — every stored config must carry each exactly once. */
+/** The five statutory rate keys: every stored config must carry each exactly once. */
 export const REQUIRED_VAT_KEYS: VatRateKey[] = [
   "standard",
   "reduced",
@@ -163,7 +163,7 @@ export function parseVatConfig(raw: unknown): VatConfig | null {
 /* ---------- goods/service categories → rate ----------
    So the user picks WHAT they're selling and the correct rate resolves
    automatically, instead of having to know the percentage. Grouped by rate in
-   the UI. Classification can be nuanced — the on-result disclaimer covers the
+   the UI. Classification can be nuanced: the on-result disclaimer covers the
    edge cases. Source: revenue.ie/en/vat/vat-rates (rate database). */
 
 export interface VatCategory {
@@ -172,30 +172,30 @@ export interface VatCategory {
 }
 
 export const VAT_CATEGORIES: VatCategory[] = [
-  // Standard — 23%
+  // Standard: 23%
   { label: "General goods & services (standard rate)", rateKey: "standard" },
   { label: "Adult clothing & footwear", rateKey: "standard" },
   { label: "Electrical goods & appliances", rateKey: "standard" },
   { label: "Alcohol, soft drinks & bottled water", rateKey: "standard" },
   { label: "Professional services (legal, accountancy, consultancy)", rateKey: "standard" },
   { label: "Furniture, cosmetics & most retail goods", rateKey: "standard" },
-  // Reduced — 13.5%
+  // Reduced: 13.5%
   { label: "Electricity & gas (domestic energy)", rateKey: "reduced" },
   { label: "Home heating oil & solid fuel", rateKey: "reduced" },
   { label: "Building & construction services", rateKey: "reduced" },
   { label: "General repairs & maintenance", rateKey: "reduced" },
   { label: "Hotel & holiday accommodation", rateKey: "reduced" },
-  // Second reduced — 9%
+  // Second reduced: 9%
   { label: "Restaurant & catering meals", rateKey: "second-reduced" },
   { label: "Hot takeaway food & hot drinks", rateKey: "second-reduced" },
   { label: "Hairdressing", rateKey: "second-reduced" },
   { label: "Newspapers, periodicals & e-books", rateKey: "second-reduced" },
   { label: "Sporting facilities & gym membership", rateKey: "second-reduced" },
   { label: "Cinema, theatre & concert admission", rateKey: "second-reduced" },
-  // Livestock — 4.8%
+  // Livestock: 4.8%
   { label: "Livestock (cattle, sheep, pigs)", rateKey: "livestock" },
   { label: "Greyhounds & hire of horses", rateKey: "livestock" },
-  // Zero — 0%
+  // Zero: 0%
   { label: "Groceries & most food and drink", rateKey: "zero" },
   { label: "Children's clothing & footwear", rateKey: "zero" },
   { label: "Oral medicines", rateKey: "zero" },
@@ -205,7 +205,7 @@ export const VAT_CATEGORIES: VatCategory[] = [
 
 /* ---------- registration thresholds (since 1 Jan 2025) ---------- */
 
-/* Derived from VAT_CONFIG_DEFAULT — one source, no drift. */
+/* Derived from VAT_CONFIG_DEFAULT: one source, no drift. */
 export const VAT_THRESHOLDS: VatThresholds = VAT_CONFIG_DEFAULT.thresholds;
 
 /* ---------- maths ---------- */
@@ -251,8 +251,8 @@ export function removeVat(gross: number, percent: number): VatBreakdown {
 }
 
 /* ---------- net VAT position (the VAT3 return) ----------
-   A registered business charges VAT on its sales (output VAT — owed to
-   Revenue) and pays VAT on its purchases (input VAT — reclaimable). At the
+   A registered business charges VAT on its sales (output VAT: owed to
+   Revenue) and pays VAT on its purchases (input VAT: reclaimable). At the
    end of the period the two are netted on the VAT3 return:
 
      T1  VAT on sales      (output)
@@ -266,11 +266,11 @@ export function removeVat(gross: number, percent: number): VatBreakdown {
 export type VatDirection = "payable" | "receivable" | "balanced";
 
 export interface VatPosition {
-  /** T1 — VAT charged on sales, owed to Revenue. */
+  /** T1: VAT charged on sales, owed to Revenue. */
   outputVat: number;
-  /** T2 — VAT paid on purchases, reclaimable. */
+  /** T2: VAT paid on purchases, reclaimable. */
   inputVat: number;
-  /** |T1 − T2| — the amount that changes hands. */
+  /** |T1 − T2|: the amount that changes hands. */
   netVat: number;
   /** Which way the net amount flows. */
   direction: VatDirection;

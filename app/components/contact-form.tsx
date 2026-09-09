@@ -1,12 +1,12 @@
 "use client";
 
-/* Contact enquiry — a 3-step wizard (Topic → Enquiry → Details) that posts to
+/* Contact enquiry: a 3-step wizard (Topic → Enquiry → Details) that posts to
    the unchanged submitEnquiry server action. Rebuilt in the site's design
    system (no shadcn/lucide).
 
    Mechanism (see spec 2026-07-09-contact-wizard-design): ONE <form noValidate>.
    Every step's fieldset is always mounted; inactive ones use the `hidden`
-   attribute — NOT conditional render — because FormData serialises only mounted
+   attribute, NOT conditional render, because FormData serialises only mounted
    inputs, so unmounting a step would drop its fields from the final POST. Hidden
    inputs still submit; they are never `disabled`. Only the button row is
    conditionally rendered, so no hidden submit button can post from an earlier
@@ -24,7 +24,7 @@ const STEP_META = [
   {
     title: "Topic",
     prompt: "What can we help you with?",
-    sub: "Pick the closest area: you can explain in detail next.",
+    sub: "Pick the closest area. You can explain in detail on the next step.",
   },
   {
     title: "Your enquiry",
@@ -227,7 +227,7 @@ export function ContactForm() {
         <p className="mt-1.5 text-sm leading-6 text-muted">{STEP_META[step - 1].sub}</p>
       </div>
 
-      {/* Step 1 — topic */}
+      {/* Step 1: topic */}
       <fieldset hidden={step !== 1} className="border-0 p-0">
         <legend className="sr-only">Choose a topic</legend>
         <div className="flex flex-wrap gap-2.5">
@@ -254,7 +254,7 @@ export function ContactForm() {
         <input type="hidden" name="service" value={service} />
       </fieldset>
 
-      {/* Step 2 — the enquiry + related FAQs */}
+      {/* Step 2: the enquiry + related FAQs */}
       <fieldset hidden={step !== 2} className="flex flex-col gap-3 border-0 p-0">
         <legend className="sr-only">Describe your enquiry</legend>
         <label htmlFor="message" className="block text-sm font-medium text-ink">
@@ -297,7 +297,7 @@ export function ContactForm() {
         )}
       </fieldset>
 
-      {/* Step 3 — contact details */}
+      {/* Step 3: contact details */}
       <fieldset hidden={step !== 3} className="flex flex-col gap-5 border-0 p-0">
         <legend className="sr-only">Your contact details</legend>
         <div className="grid gap-5 sm:grid-cols-2">

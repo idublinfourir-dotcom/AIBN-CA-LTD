@@ -1,6 +1,6 @@
 "use client";
 
-/* Working Capital calculator (finance) — current assets − current liabilities,
+/* Working Capital calculator (finance): current assets − current liabilities,
    plus the current and quick (acid-test) ratios. Standard financial-analysis
    metrics, not tax. All maths live in ../lib/working-capital (single source of
    truth). */
@@ -22,7 +22,7 @@ const money = (n: number) =>
 
 const ratio = (n: number) => `${n.toFixed(2)}×`;
 
-/* Rule-of-thumb reading of a ratio — deliberately hedged. */
+/* Rule-of-thumb reading of a ratio: deliberately hedged. */
 function currentRatioBand(r: number | null): string {
   if (r === null) return "No current liabilities to cover.";
   if (r < 1) return "Under 1: current liabilities exceed current assets.";
@@ -68,11 +68,11 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
   const view = {
     surplus: {
       tag: { text: "Surplus", cls: "bg-primary-500 text-white" },
-      sub: "current assets exceed current liabilities: short-term obligations are covered.",
+      sub: "current assets exceed current liabilities, so short-term obligations are covered.",
     },
     deficit: {
       tag: { text: "Deficit", cls: "bg-navy-900 text-white" },
-      sub: "current liabilities exceed current assets: a short-term funding gap.",
+      sub: "current liabilities exceed current assets, leaving a short-term funding gap.",
     },
     balanced: {
       tag: { text: "Balanced", cls: "border border-line bg-surface-muted text-muted" },
@@ -204,13 +204,13 @@ export function WorkingCapitalCalculator() {
         <div className="grid gap-5 sm:grid-cols-2">
           <RatioCard
             title="Current ratio"
-            value={r.currentRatio === null ? "—" : ratio(r.currentRatio)}
+            value={r.currentRatio === null ? "n/a" : ratio(r.currentRatio)}
             formula="assets ÷ liabilities"
             reading={currentRatioBand(r.currentRatio)}
           />
           <RatioCard
             title="Quick ratio"
-            value={r.quickRatio === null ? "—" : ratio(r.quickRatio)}
+            value={r.quickRatio === null ? "n/a" : ratio(r.quickRatio)}
             formula="(assets − stock) ÷ liabilities"
             reading={quickRatioBand(r.quickRatio)}
           />

@@ -67,22 +67,22 @@ export async function saveCatSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only. Re-parse strictly.
+  // Phase 2. Confirm: write the previewed payload only. Re-parse strictly.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const cfg = parseCatConfig(parsed);
-    if (!cfg) return { status: "error", message: "The change didn't validate — try again." };
+    if (!cfg) return { status: "error", message: "The change didn't validate. Please try again." };
     try {
       await saveCalculatorConfig(CAT_SETTINGS_KEY, cfg);
     } catch (err) {
       console.error("[cat] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "cat-settings",
@@ -95,7 +95,7 @@ export async function saveCatSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview: reconstruct the config from the form fields.
+  // Phase 1. Preview: reconstruct the config from the form fields.
   const raw: RawCatConfig = {
     ratePercent: num(formData.get("ratePercent")),
     thresholds: {

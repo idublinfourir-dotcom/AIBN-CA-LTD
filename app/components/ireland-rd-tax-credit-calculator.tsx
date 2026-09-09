@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland R&D Corporation Tax Credit calculator — 35% of qualifying R&D spend,
+/* Ireland R&D Corporation Tax Credit calculator: 35% of qualifying R&D spend,
    paid over three annual instalments (greater of 50% / €87,500 in year one,
    then 3/5 and the balance). The user enters only spend they judge eligible;
    this component never decides what qualifies. The editable rates/thresholds
@@ -125,7 +125,7 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
             subcontractor and grant limits, and the capital/revenue split all shape a
             real claim, and Revenue can audit it. Treat this as a sizing estimate,
             then let us build the claim. Applies to {RD_CREDIT.effectiveFrom}.
-            {/* effectiveFrom is prose-only, not editable — stays in code. */}
+            {/* effectiveFrom is prose-only, not editable: stays in code. */}
           </p>
         </div>
       </div>
@@ -197,7 +197,7 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
           </p>
         </div>
 
-        {/* how it's paid — info note */}
+        {/* how it's paid: info note */}
         <div className="mt-5 border border-line bg-surface p-5">
           <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
             Paid in three instalments

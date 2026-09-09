@@ -1,4 +1,4 @@
-/* CSV helpers for the CGT indexation multiplier table — parse, serialize, and
+/* CSV helpers for the CGT indexation multiplier table: parse, serialize, and
    merge (upsert). PURE, no I/O, so every branch is unit-testable. The admin
    import/export flows and Project B reuse these.
 
@@ -103,7 +103,7 @@ export interface MergeResult {
   changed: string[];
 }
 
-/** Merge (upsert) incoming rows into current by yearKey — update matching,
+/** Merge (upsert) incoming rows into current by yearKey: update matching,
     add new, NEVER delete. Result is sorted by sortOrder. */
 export function mergeMultipliers(
   current: CgtMultiplier[],

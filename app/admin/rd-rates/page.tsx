@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function RdRatesPage() {
   await requireAdmin();
 
-  // DB row when present and valid, otherwise the versioned fallback — exactly
+  // DB row when present and valid, otherwise the versioned fallback: exactly
   // what the public calculator uses.
   const [{ config }, audit] = await Promise.all([
     getRdData(),
@@ -31,8 +31,8 @@ export default async function RdRatesPage() {
           >
             Ireland R&amp;D tax credit calculator
           </a>
-          . Update these after a Budget — changes go live immediately, no deploy
-          needed.
+          . Update these after a Budget. Changes go live immediately, with no
+          deploy needed.
         </p>
       </header>
 

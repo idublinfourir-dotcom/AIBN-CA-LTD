@@ -1,9 +1,9 @@
 "use client";
 
-/* Ireland CAT calculator — gift & inheritance tax for one benefit.
+/* Ireland CAT calculator: gift & inheritance tax for one benefit.
    Left: inputs (benefit type, relationship, value, liabilities, relief, small
    gift toggle, prior same-group benefits, valuation month). Right: the computed
-   breakdown — market value → incumbrance-free → relief → small gift → taxable →
+   breakdown: market value → incumbrance-free → relief → small gift → taxable →
    threshold → CAT due. All maths live in ../lib/ireland-cat (single source). */
 
 import { useState } from "react";

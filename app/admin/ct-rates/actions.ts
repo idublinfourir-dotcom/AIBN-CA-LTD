@@ -3,7 +3,7 @@
 /* Admin save action for the corporation tax calculator.
    saveCorporationTaxSettings is TWO-PHASE: the first submit returns a preview
    (diff) and writes nothing; the Confirm submit carries a normalized `payload`
-   and only THAT is written — so you always commit exactly what you previewed.
+   and only THAT is written, so you always commit exactly what you previewed.
    Re-checks requireAdmin on both phases; guard-railed + audited. Mirrors the
    CGT settings action. */
 
@@ -39,14 +39,14 @@ export async function saveCorporationTaxSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only.
+  // Phase 2. Confirm: write the previewed payload only.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const v = validateCtConfig(parsed as never);
     if (!v.ok) return { status: "error", message: v.message };
@@ -54,7 +54,7 @@ export async function saveCorporationTaxSettings(
       await saveCalculatorConfig(CT_SETTINGS_KEY, v.value);
     } catch (err) {
       console.error("[ct] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "corporation-tax-settings",
@@ -67,7 +67,7 @@ export async function saveCorporationTaxSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview.
+  // Phase 1: preview.
   const v = validateCtConfig({
     tradingPercent: num(formData.get("trading_rate")),
     passivePercent: num(formData.get("passive_rate")),

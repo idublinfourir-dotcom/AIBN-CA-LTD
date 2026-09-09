@@ -26,7 +26,7 @@ const quickActions = [
     href: "/contact",
     icon: "chat",
     title: "Start an enquiry",
-    body: "Message the team: same-day reply.",
+    body: "Message the team and get a same-day reply.",
   },
   {
     href: "/tools/ireland",
@@ -46,7 +46,7 @@ const quickActions = [
 export default async function PortalPage() {
   const user = await requireClient();
 
-  // Profile, the client's own enquiries and a total count — all from the pg
+  // Profile, the client's own enquiries and a total count: all from the pg
   // pool and fetched in parallel. Guest enquiries are linked to user_id only
   // at the verified email/OAuth callback boundary.
   const [profileResult, enquiriesResult, countsResult] = await Promise.all([
@@ -93,7 +93,7 @@ export default async function PortalPage() {
   }
   const unreadCount = unreadIds.size;
 
-  // The client is viewing the portal now — mark their threads read so the cues
+  // The client is viewing the portal now: mark their threads read so the cues
   // clear on the next visit.
   await markClientRead(user.id);
 
@@ -114,14 +114,14 @@ export default async function PortalPage() {
     },
     {
       label: "Last activity",
-      value: latest ? timeAgo(latest) : "—",
+      value: latest ? timeAgo(latest) : "None yet",
       hint: latest ? fmt.format(latest) : "No activity yet",
     },
   ];
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* Hero — dark brand card with greeting, CTAs and a stats strip */}
+      {/* Hero: dark brand card with greeting, CTAs and a stats strip */}
       <section className="relative overflow-hidden rounded-none bg-navy-900 text-white">
         <div
           aria-hidden="true"
@@ -301,7 +301,7 @@ export default async function PortalPage() {
               <Avatar initials={initials} className="h-11 w-11 text-sm" />
               <div className="min-w-0 leading-tight">
                 <p className="truncate font-medium text-ink">
-                  {profile?.full_name ?? "—"}
+                  {profile?.full_name ?? "Name not set"}
                 </p>
                 <p className="truncate text-sm text-muted">{user.email}</p>
               </div>
@@ -312,7 +312,7 @@ export default async function PortalPage() {
                 <dd className="font-medium text-ink">
                   {profile?.created_at
                     ? fmt.format(new Date(profile.created_at))
-                    : "—"}
+                    : "Not recorded"}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">

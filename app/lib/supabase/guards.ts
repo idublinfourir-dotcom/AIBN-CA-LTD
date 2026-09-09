@@ -20,7 +20,7 @@ export type SessionUser = {
 
 /**
  * User summary for UI (the header avatar/menu), all from the locally-verified
- * JWT (getClaims — no network round-trip). `role` comes from the `user_role`
+ * JWT (getClaims, no network round-trip). `role` comes from the `user_role`
  * claim stamped by the `custom_access_token_hook` (single source of truth =
  * profiles, set at token issuance). Falls back to a profiles lookup only when
  * the claim is absent (e.g. a token issued before the hook was enabled), so it
@@ -73,7 +73,7 @@ export async function requireUser(next = "/portal") {
 
 /**
  * Require a non-admin (client) user. Admins are redirected to /admin so the two
- * areas stay segregated — an admin can't browse the client portal and vice
+ * areas stay segregated: an admin can't browse the client portal and vice
  * versa. Role is read via the pg pool (bypasses RLS) keyed on the user id.
  */
 export async function requireClient() {
@@ -92,7 +92,7 @@ export async function requireClient() {
 /**
  * Require an admin. Non-admins are sent to /portal (not 404) to avoid leaking
  * the existence of the admin area. Role is read via the pg pool (bypasses RLS)
- * keyed on the authenticated user id — reliable and not subject to the
+ * keyed on the authenticated user id: reliable and not subject to the
  * is_admin() policy footgun.
  */
 export async function requireAdmin() {

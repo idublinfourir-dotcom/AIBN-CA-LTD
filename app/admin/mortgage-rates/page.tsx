@@ -118,11 +118,11 @@ export default async function MortgageRatesPage() {
           >
             Ireland mortgage calculator
           </a>
-          . Changes go live immediately — no deploy needed.
+          . Changes go live immediately, with no deploy needed.
           {products.length === 0 && (
             <>
               {" "}
-              No products in the database yet — run{" "}
+              No products in the database yet. Run{" "}
               <code className="rounded-none bg-surface-muted px-1.5 py-0.5 text-xs">
                 node scripts/db-migrate.mjs
               </code>{" "}

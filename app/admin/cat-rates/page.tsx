@@ -29,8 +29,8 @@ export default async function CatRatesPage() {
           >
             Ireland CAT calculator
           </a>
-          . Update these after a Budget — changes go live immediately, no deploy
-          needed.
+          . Update these after a Budget. Changes go live immediately, with no
+          deploy needed.
         </p>
       </header>
 

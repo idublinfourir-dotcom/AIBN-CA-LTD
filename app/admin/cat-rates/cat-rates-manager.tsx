@@ -1,7 +1,7 @@
 "use client";
 
 /* Admin editor for the CAT calculator.
-   TWO-PHASE — "Review change" previews a diff, "Confirm" writes. Inputs are
+   TWO-PHASE: "Review change" previews a diff, "Confirm" writes. Inputs are
    disabled during the preview so you commit exactly what you saw. Recent
    changes: read-only audit trail. Mirrors vat-rates-manager. */
 
@@ -52,7 +52,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "n/a";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -91,7 +91,7 @@ function SettingsForm({ config }: { config: CatConfig }) {
       <h3 className="font-display text-base font-semibold text-ink">Rate, thresholds &amp; reliefs</h3>
       <p className="mt-1 text-xs text-muted">
         The CAT rate, the three group thresholds, the small-gift exemption and the
-        relief percentages. Update after a Budget — changes go live immediately, no
+        relief percentages. Update after a Budget. Changes go live immediately, with no
         deploy needed.
       </p>
 
@@ -169,7 +169,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "Unknown"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>

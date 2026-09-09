@@ -1,11 +1,11 @@
 "use client";
 
 /* Admin editor for the R&D tax credit calculator.
-   Rates form: TWO-PHASE — "Review change" previews a diff, "Confirm" writes.
+   Rates form: TWO-PHASE. "Review change" previews a diff, "Confirm" writes.
    Only the four numbers that drive the maths are editable; inputs are disabled
    during the preview so you commit exactly what you saw. Recent changes:
    read-only audit trail. Saving upserts the DB and revalidates the public
-   calculator — no deploy. Mirrors cgt-rates-manager. */
+   calculator, no deploy. Mirrors cgt-rates-manager. */
 
 import { useActionState } from "react";
 import type { RdConfig } from "../../lib/ireland-rd-tax-credit";
@@ -56,7 +56,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "n/a";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -146,7 +146,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "Unknown"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>
