@@ -45,6 +45,19 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+
+  async redirects() {
+    return [
+      // The mortgage calculator moved from the Accountants Hub to the Personal
+      // Hub. Permanent so the indexed URL passes its ranking to the new one;
+      // the page had been live and linked from the portal, so it cannot 404.
+      {
+        source: "/tools/ireland",
+        destination: "/personal/mortgage",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

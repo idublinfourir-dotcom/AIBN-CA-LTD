@@ -1,7 +1,7 @@
 "use client";
 
 /* Admin editor for the Ireland mortgage comparison: Central Bank policy
-   numbers + the lender rate table. Saving revalidates /tools/ireland, so
+   numbers + the lender rate table. Saving revalidates /personal/mortgage, so
    changes go live immediately, no deploy. */
 
 import { useActionState } from "react";

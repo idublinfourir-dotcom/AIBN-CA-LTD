@@ -113,7 +113,7 @@ export default async function MortgageRatesPage() {
         <p className="mt-1 text-sm text-muted">
           Lender products and Central Bank policy shown on the{" "}
           <a
-            href="/tools/ireland"
+            href="/personal/mortgage"
             className="font-medium text-primary-600 transition-colors duration-200 hover:text-primary-500"
           >
             Ireland mortgage calculator

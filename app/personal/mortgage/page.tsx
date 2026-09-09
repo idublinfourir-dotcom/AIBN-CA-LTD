@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
-import { CalculatorTabs } from "../../components/calculator-tabs";
+import { PersonalTabs } from "../../components/personal-tabs";
 import { IrelandMortgageCalculator } from "../../components/ireland-mortgage-calculator";
 import { getMortgageData } from "../../lib/mortgage-data";
 
@@ -37,7 +37,7 @@ export default async function IrelandMortgagePage() {
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
-              { label: "Tools" },
+              { label: "Personal Hub", href: "/personal/mortgage" },
               { label: "Ireland mortgage" },
             ]}
           />
@@ -47,7 +47,7 @@ export default async function IrelandMortgagePage() {
       />
 
       <Container className="py-16 sm:py-20">
-        <CalculatorTabs current="/tools/ireland" />
+        <PersonalTabs current="/personal/mortgage" />
 
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <IrelandMortgageCalculator

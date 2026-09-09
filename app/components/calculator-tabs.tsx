@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 /* The Ireland calculators, in one place. Drives both the on-page switcher
-   below and the Tools dropdown in the site header. */
+   below and the Accountants Hub dropdown in the site header.
+
+   Mortgage used to live here; it moved to the Personal Hub, see
+   app/components/personal-tabs.tsx. */
 export const CALCULATOR_TOOLS = [
   {
     href: "/tools/ireland-income-tax",
@@ -37,11 +40,6 @@ export const CALCULATOR_TOOLS = [
     href: "/tools/ireland-cat",
     label: "CAT",
     desc: "Gift & inheritance tax: thresholds & reliefs",
-  },
-  {
-    href: "/tools/ireland",
-    label: "Mortgage",
-    desc: "Compare repayments across Irish lenders",
   },
 ] as const;
 
@@ -80,16 +78,30 @@ function TabInner({ label, active }: { label: string; active: boolean }) {
   );
 }
 
-/** On-page switcher between the Ireland calculators. `current` is the active
-    tool's href; it renders as a locked (filled) tab, the rest as hover links. */
-export function CalculatorTabs({ current }: { current: string }) {
+export interface ToolTab {
+  readonly href: string;
+  readonly label: string;
+}
+
+/** On-page switcher between the tools of one hub. `current` is the active
+    tool's href; it renders as a locked (filled) tab, the rest as hover links.
+    Shared so the Accountants Hub and the Personal Hub switchers stay identical. */
+export function ToolTabs({
+  heading,
+  tools,
+  current,
+}: {
+  heading: string;
+  tools: readonly ToolTab[];
+  current: string;
+}) {
   return (
-    <nav aria-label="Calculators" className="mb-8">
+    <nav aria-label={heading} className="mb-8">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-        Ireland calculators
+        {heading}
       </p>
       <ul className="flex flex-wrap gap-x-3 gap-y-2">
-        {CALCULATOR_TOOLS.map((tool) => {
+        {tools.map((tool) => {
           const active = tool.href === current;
           return (
             <li key={tool.href}>
@@ -113,5 +125,16 @@ export function CalculatorTabs({ current }: { current: string }) {
         })}
       </ul>
     </nav>
+  );
+}
+
+/** The Accountants Hub switcher. */
+export function CalculatorTabs({ current }: { current: string }) {
+  return (
+    <ToolTabs
+      heading="Ireland calculators"
+      tools={CALCULATOR_TOOLS}
+      current={current}
+    />
   );
 }
