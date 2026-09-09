@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { serviceCategories, site } from "../lib/content";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
+import { PERSONAL_TOOLS } from "./personal-tabs";
 import type { SessionUser } from "../lib/supabase/guards";
 
 /* Pricing is hidden site-wide while the fee model is being decided; restore
@@ -151,9 +152,11 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [mobilePersonalOpen, setMobilePersonalOpen] = useState(false);
   const [mobileFoundersOpen, setMobileFoundersOpen] = useState(false);
   const [servicesClosed, setServicesClosed] = useState(false);
   const [toolsClosed, setToolsClosed] = useState(false);
+  const [personalClosed, setPersonalClosed] = useState(false);
   const [foundersClosed, setFoundersClosed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -161,6 +164,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const pathname = usePathname();
   const servicesActive = isActive(pathname, "/services");
   const toolsActive = isActive(pathname, "/tools");
+  const personalActive = isActive(pathname, "/personal");
   const foundersActive = isActive(pathname, "/toolkits");
 
   // Force an open dropdown shut after a link is clicked (otherwise the clicked
@@ -171,6 +175,10 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   }
   function closeTools(e: React.MouseEvent<HTMLElement>) {
     setToolsClosed(true);
+    e.currentTarget.blur();
+  }
+  function closePersonal(e: React.MouseEvent<HTMLElement>) {
+    setPersonalClosed(true);
     e.currentTarget.blur();
   }
   function closeFounders(e: React.MouseEvent<HTMLElement>) {
@@ -205,6 +213,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
     setMenuOpen(false);
     setMobileServicesOpen(false);
     setMobileToolsOpen(false);
+    setMobilePersonalOpen(false);
     setMobileFoundersOpen(false);
   }
 
@@ -474,6 +483,76 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               </div>
             </div>
 
+            {/* Personal Hub dropdown (matches Accountants Hub).
+                Sits after the Founders Hub: the two business-facing hubs read
+                first, personal finance last, before the plain links. */}
+            <div
+              className="group relative"
+              onMouseEnter={() => setPersonalClosed(false)}
+              onFocus={() => setPersonalClosed(false)}
+            >
+              <Link
+                href="/personal/mortgage"
+                aria-current={personalActive ? "page" : undefined}
+                onClick={closePersonal}
+                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
+                  personalActive
+                    ? "text-primary-600"
+                    : "text-ink-body hover:text-ink"
+                }`}
+              >
+                Personal Hub
+                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+                <span
+                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                    personalActive
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </Link>
+
+              {/* Narrower panel than the Accountants Hub: two entries, not seven. */}
+              <div
+                className={`invisible absolute left-1/2 top-full z-50 w-[min(30rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                  personalClosed ? "!invisible !opacity-0" : ""
+                }`}
+              >
+                <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
+                  <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+                    Personal finance
+                  </p>
+                  <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+                    {PERSONAL_TOOLS.map((tool) => (
+                      <Link
+                        key={tool.href}
+                        href={tool.href}
+                        onClick={closePersonal}
+                        aria-current={pathname === tool.href ? "page" : undefined}
+                        className="group/item block"
+                      >
+                        <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
+                          {tool.label}
+                        </span>
+                        <span className="mt-0.5 block text-[13px] leading-5 text-muted">
+                          {tool.desc}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-6 border-t border-line pt-4">
+                    <Link
+                      href="/personal/mortgage"
+                      onClick={closePersonal}
+                      className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
+                    >
+                      Open the Personal Hub <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {secondaryLinks.map((link) => {
               const active = isActive(pathname, link.href);
               return (
@@ -669,6 +748,40 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
                       {res.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Personal Hub accordion, same order as the desktop row. */}
+              <button
+                type="button"
+                aria-expanded={mobilePersonalOpen}
+                onClick={() => setMobilePersonalOpen((open) => !open)}
+                className={`flex items-center justify-between rounded-none px-3 py-2.5 text-[15px] font-medium transition-colors duration-200 ${
+                  personalActive
+                    ? "bg-secondary-50 font-semibold text-primary-500"
+                    : "text-ink-body hover:bg-secondary-50"
+                }`}
+              >
+                Personal Hub
+                <Chevron
+                  className={`text-muted transition-transform duration-200 ${
+                    mobilePersonalOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {mobilePersonalOpen && (
+                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                  {PERSONAL_TOOLS.map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      onClick={closeMobile}
+                      aria-current={pathname === tool.href ? "page" : undefined}
+                      className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
+                    >
+                      {tool.label}
                     </Link>
                   ))}
                 </div>

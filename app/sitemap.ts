@@ -5,7 +5,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     "",
     "/services",
-    "/tools/ireland",
+    "/personal/mortgage",
+    "/personal/investment",
     "/tools/ireland-income-tax",
     "/tools/ireland-vat",
     "/tools/ireland-corporation-tax",
