@@ -1,4 +1,4 @@
-/* Server-side guardrails for VAT admin edits. PURE — reject clearly-wrong
+/* Server-side guardrails for VAT admin edits. PURE: reject clearly-wrong
    values with a message; the two-step preview is the guard against subtle
    mistakes. The five statutory rate keys are fixed (categories map to them):
    percents editable, no add/remove. Mirrors cgt-guardrails.ts. */

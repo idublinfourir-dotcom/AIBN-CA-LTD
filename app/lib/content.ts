@@ -143,7 +143,7 @@ export interface SubService {
   overview: string;
   included: string[];
   bestFor: string[];
-  /** Long-form detail — 2+ paragraphs (split on blank line). Rendered below the scope list. */
+  /** Long-form detail: 2+ paragraphs (split on blank line). Rendered below the scope list. */
   context?: string;
 }
 
@@ -765,7 +765,7 @@ export const serviceCategories: ServiceCategory[] = [
         overview:
           "Raising debt or equity is won or lost on the quality of your numbers and how you defend them. We prepare the model, the projections and the supporting analysis, and stand behind them through diligence, so you go in credible and come out funded.",
         included: [
-          "Financial projections: models built to a funder's standard",
+          "Financial projections: models built to a funder’s standard",
           "Funding applications: bank, grant and investor submissions",
           "Business case: the ask costed and justified",
           "Diligence support: questions from lenders and investors handled",
@@ -786,7 +786,7 @@ export const serviceCategories: ServiceCategory[] = [
         blurb:
           "What the business is worth, and how to prepare it for a sale or handover when the time comes.",
         overview:
-          "A business is usually an owner's biggest asset, yet most only find out what it is worth when they are already selling. We value it properly and, if an exit or succession is on the horizon, prepare it so you keep more of the proceeds and the handover goes cleanly.",
+          "A business is usually an owner’s biggest asset, yet most only find out what it is worth when they are already selling. We value it properly and, if an exit or succession is on the horizon, prepare it so you keep more of the proceeds and the handover goes cleanly.",
         included: [
           "Business valuations: for a sale, share transfer or dispute",
           "Exit readiness: the business prepared to sell well",
@@ -887,7 +887,7 @@ export const serviceCategories: ServiceCategory[] = [
         slug: "credit-control",
         title: "Credit Control & Receivables",
         blurb:
-          "Invoices chased and cash collected, professionally and persistently, so your money does not sit in someone else's account.",
+          "Invoices chased and cash collected, professionally and persistently, so your money does not sit in someone else’s account.",
         overview:
           "Profit on paper does not pay wages; collected cash does. We run credit control as your back office (issuing invoices, chasing politely but persistently, and keeping the ledger clean) so your cash comes in on terms.",
         included: [
@@ -904,7 +904,7 @@ export const serviceCategories: ServiceCategory[] = [
           "Owners who hate chasing their own clients",
         ],
         context:
-          "Late payment is one of the biggest, quietest drains on a small business: the sale is made, the work is done, but the cash sits in the customer's account instead of yours. A consistent chase process (statements, reminders and follow-up on a schedule) collects far more than the occasional awkward phone call, and it does it without straining the relationship.\n\nWe run it as an extension of your business: issuing invoices promptly, following up politely but persistently, flagging risky accounts before they become bad debts, and keeping the sales ledger reconciled so you always know your real receivables. The point is simple: turn profit on paper into cash in the bank.",
+          "Late payment is one of the biggest, quietest drains on a small business: the sale is made, the work is done, but the cash sits in the customer’s account instead of yours. A consistent chase process (statements, reminders and follow-up on a schedule) collects far more than the occasional awkward phone call, and it does it without straining the relationship.\n\nWe run it as an extension of your business: issuing invoices promptly, following up politely but persistently, flagging risky accounts before they become bad debts, and keeping the sales ledger reconciled so you always know your real receivables. The point is simple: turn profit on paper into cash in the bank.",
       },
     ],
   },
@@ -969,7 +969,7 @@ export const serviceCategories: ServiceCategory[] = [
         blurb:
           "Get your records straight before exchanges start reporting to Revenue under CARF and DAC8 from 2026/27.",
         overview:
-          "The days of crypto going unnoticed are ending. Under the OECD's CARF and the EU's DAC8, exchanges begin collecting user data in 2026 and reporting it to Revenue from 2027. We get your historic position straight and filed before that data arrives, not after.",
+          "The days of crypto going unnoticed are ending. Under the OECD’s CARF and the EU’s DAC8, exchanges begin collecting user data in 2026 and reporting it to Revenue from 2027. We get your historic position straight and filed before that data arrives, not after.",
         included: [
           "Position review: historic activity assessed for exposure",
           "Voluntary disclosure: unreported gains regularised properly",
@@ -984,7 +984,7 @@ export const serviceCategories: ServiceCategory[] = [
           "Investors wanting to get ahead of CARF",
         ],
         context:
-          "The big change in crypto is not a new tax; it is visibility. Under the OECD Crypto-Asset Reporting Framework (CARF) and the EU's DAC8, exchanges begin collecting user data in 2026 and reporting it to Revenue from 2027. Positions that once went unseen will be matched against your returns automatically, so a gap that was invisible becomes a question with your name on it.\n\nGetting ahead of that is far cheaper than being caught by it. We review your historic activity, identify the missing years and wallets, and where there is unreported tax we regularise it properly through a voluntary disclosure, which carries far lighter consequences than a Revenue-initiated intervention. Then we put a process in place so your records stay aligned with what the exchanges will report.",
+          "The big change in crypto is not a new tax; it is visibility. Under the OECD Crypto-Asset Reporting Framework (CARF) and the EU’s DAC8, exchanges begin collecting user data in 2026 and reporting it to Revenue from 2027. Positions that once went unseen will be matched against your returns automatically, so a gap that was invisible becomes a question with your name on it.\n\nGetting ahead of that is far cheaper than being caught by it. We review your historic activity, identify the missing years and wallets, and where there is unreported tax we regularise it properly through a voluntary disclosure, which carries far lighter consequences than a Revenue-initiated intervention. Then we put a process in place so your records stay aligned with what the exchanges will report.",
       },
       {
         slug: "portfolio-reconstruction",

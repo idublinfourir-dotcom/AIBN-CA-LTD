@@ -90,7 +90,7 @@ function SegmentedField<T extends string>({
 /* Numeric field with a local text buffer. Echoing String(parsedNumber) straight
    back into a controlled <input type="number"> destroys decimal entry: "5." is
    sanitised to "" mid-keystroke, "5.50" snaps back to "5.5" and moves the
-   cursor, and a leading 0 renders as empty — so a user typing 5.5 could end up
+   cursor, and a leading 0 renders as empty, so a user typing 5.5 could end up
    with 55. The buffer holds exactly what was typed; the parent only receives
    the parsed number, and the buffer re-syncs only when the parent value is
    changed externally (e.g. New Calculation). */

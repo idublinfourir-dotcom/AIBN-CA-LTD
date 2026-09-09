@@ -330,7 +330,7 @@ export default async function AdminPage() {
           )}
         </Panel>
 
-        {/* Rate review health — every calculator at a glance */}
+        {/* Rate review health: every calculator at a glance */}
         <Panel className="overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
             <h3 className="font-display text-lg font-semibold tracking-tight text-ink">

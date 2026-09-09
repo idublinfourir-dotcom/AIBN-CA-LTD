@@ -15,15 +15,15 @@ export const metadata: Metadata = {
 const notes = [
   {
     title: "Payable or receivable",
-    body: "VAT charged on sales is owed to Revenue; VAT paid on purchases is reclaimable. The calculator nets the two: charge more than you paid and the balance is payable; pay more than you charged and it's receivable.",
+    body: "VAT charged on sales is owed to Revenue; VAT paid on purchases is reclaimable. The calculator nets the two, so charge more than you paid and the balance is payable, pay more than you charged and it comes back to you.",
   },
   {
     title: "Every Irish rate",
-    body: "Standard 23%, reduced 13.5%, second reduced 9% (food, catering and hairdressing since 1 July 2026), 4.8% livestock and 0% zero: pick what you sell and what you buy and each rate is applied for you.",
+    body: "Standard 23%, reduced 13.5%, second reduced 9% (food, catering and hairdressing since 1 July 2026), 4.8% on livestock and 0% zero-rated. Pick what you sell and what you buy, and the right rate is applied for you.",
   },
   {
     title: "Registration thresholds",
-    body: "The €85,000 goods and €42,500 services turnover limits shown alongside, so you can see where a growing business needs to register.",
+    body: "The €85,000 goods and €42,500 services turnover limits sit alongside the result, so you can see the point at which a growing business has to register.",
   },
 ];
 

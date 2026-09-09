@@ -1,4 +1,4 @@
-/* Related-FAQ data + matcher for the contact wizard. PURE — no React/IO — so
+/* Related-FAQ data + matcher for the contact wizard. PURE: no React/IO, so
    getRelatedFaqs is unit-testable and can be imported by both the client
    component and node --test.
 
@@ -21,7 +21,7 @@ export interface ContactFaq {
 export const CONTACT_FAQS: ContactFaq[] = [
   {
     q: "Do I need an audit?",
-    a: "Many companies are audit-exempt: under two of turnover €15m, balance sheet €7.5m and 50 employees, filed on time.",
+    a: "Most small companies are exempt if they stay under two of €15m turnover, €7.5m balance sheet and 50 employees, and file on time.",
     href: "/services/account-bookkeeping/audit-assurance",
     keywords: ["audit", "exemption", "assurance", "statutory"],
   },
@@ -45,7 +45,7 @@ export const CONTACT_FAQS: ContactFaq[] = [
   },
   {
     q: "Can you run our payroll?",
-    a: "Full cycle, payslips, PAYE Modernisation, pensions and year-end, and we keep you ahead of auto-enrolment (My Future Fund).",
+    a: "Yes. We run the full cycle, from payslips and PAYE Modernisation through to pensions and year-end, and we keep you ahead of auto-enrolment (My Future Fund).",
     href: "/services/account-bookkeeping/payroll",
     keywords: ["payroll", "paye", "pension", "auto-enrolment", "auto enrolment", "wages", "employees"],
   },
@@ -59,8 +59,8 @@ export const CONTACT_FAQS: ContactFaq[] = [
 
 /**
  * Return the FAQs whose keywords appear in the message (case-insensitive
- * substring), most nothing-fancy first, capped at `limit`. Empty/whitespace
- * message → no FAQs.
+ * substring), in catalogue order, capped at `limit`. Empty or whitespace-only
+ * messages match nothing.
  */
 export function getRelatedFaqs(
   message: string,

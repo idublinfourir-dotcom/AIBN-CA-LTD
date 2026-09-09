@@ -49,8 +49,8 @@ test("rejects an empty 'since' label", () => {
 
 test("trims labels and applies", () => {
   const c = valid();
-  c.rates[0].label = "  Standard — 23%  ";
+  c.rates[0].label = "  Standard 23%  ";
   const r = validateVatConfig(c);
   assert.equal(r.ok, true);
-  if (r.ok) assert.equal(r.value.rates[0].label, "Standard — 23%");
+  if (r.ok) assert.equal(r.value.rates[0].label, "Standard 23%");
 });

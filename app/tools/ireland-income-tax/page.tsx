@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 const notes = [
   {
     title: "Income tax, USC & PRSI",
-    body: "Full annual position across all three deductions, with the 20%/40% band split and every tax credit itemised so each number is traceable to a rule.",
+    body: "Your full annual position across all three deductions, with the 20%/40% band split and every tax credit itemised, so each number traces back to a rule.",
   },
   {
     title: "Pension relief, done right",
-    body: "Applies the age-banded relief cap on €115,000 of earnings, pension reduces income tax only, not USC or PRSI, and any excess above the cap gets no relief.",
+    body: "Applies the age-banded relief cap to the first €115,000 of earnings. Pension contributions reduce income tax only, never USC or PRSI, and anything above the cap attracts no relief.",
   },
   {
     title: "2026 vs 2025",

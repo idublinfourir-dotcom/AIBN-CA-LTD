@@ -36,8 +36,8 @@ const euroFmt = (v: unknown) =>
 
 const DIFF_FIELDS: DiffField[] = [
   ...ASSET_CLASSES.flatMap((c) => [
-    { key: `rate_${c.key}`, label: `${c.label} — rate`, format: pctFmt },
-    { key: `years_${c.key}`, label: `${c.label} — years`, format: yearsFmt },
+    { key: `rate_${c.key}`, label: `${c.label} rate`, format: pctFmt },
+    { key: `years_${c.key}`, label: `${c.label} years`, format: yearsFmt },
   ]),
   { key: "motorCapEur", label: "Car cost cap", format: euroFmt },
   { key: "tradingCtPercent", label: "Trading CT rate", format: pctFmt },
@@ -70,22 +70,22 @@ export async function saveCapitalAllowancesSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only. Re-parse strictly.
+  // Phase 2. Confirm: write the previewed payload only. Re-parse strictly.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const cfg = parseCaConfig(parsed);
-    if (!cfg) return { status: "error", message: "The change didn't validate — try again." };
+    if (!cfg) return { status: "error", message: "The change didn't validate. Please try again." };
     try {
       await saveCalculatorConfig(CA_SETTINGS_KEY, cfg);
     } catch (err) {
       console.error("[ca] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "capital-allowances-settings",
@@ -98,7 +98,7 @@ export async function saveCapitalAllowancesSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview: read the per-class numbers + scalars from the form.
+  // Phase 1. Preview: read the per-class numbers + scalars from the form.
   const raw: RawCaConfig = {
     classes: ASSET_CLASSES.map((c) => ({
       key: c.key,

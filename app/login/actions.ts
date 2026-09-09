@@ -9,7 +9,7 @@ export interface AuthState {
   values?: { email?: string };
 }
 
-/** Only same-origin relative paths — blocks open-redirects via `next`. */
+/** Only same-origin relative paths: blocks open-redirects via `next`. */
 function isSafe(path: string) {
   return path.startsWith("/") && !path.startsWith("//");
 }
@@ -42,7 +42,7 @@ export async function login(
     redirect(requestedNext);
   }
 
-  // Look up role via the pg pool (bypasses RLS) — reliable and independent of
+  // Look up role via the pg pool (bypasses RLS): reliable and independent of
   // the just-set session cookie that the RLS read path depends on.
   let role: string | null = null;
   const userId = data.user?.id;

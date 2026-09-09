@@ -1,11 +1,11 @@
 "use client";
 
 /* Admin editor for the CGT calculator.
-   - Rates form: TWO-PHASE — "Review change" previews a diff, "Confirm" writes.
+   - Rates form: TWO-PHASE. "Review change" previews a diff, "Confirm" writes.
      Inputs are disabled during the preview so you commit exactly what you saw.
    - Multiplier table: edit / add / delete rows, each immediate + audited.
    - Recent changes: read-only audit trail.
-   Saving upserts the DB and revalidates the public calculator — no deploy. */
+   Saving upserts the DB and revalidates the public calculator, no deploy. */
 
 import { useActionState } from "react";
 import type { CgtConfig, CgtMultiplier } from "../../lib/ireland-cgt";
@@ -77,7 +77,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "n/a";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -202,8 +202,8 @@ function ImportForm() {
     <form action={action} className="mt-6 border-t border-line pt-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted">Bulk update (CSV)</p>
       <p className="mt-1 text-xs text-muted">
-        Download the current table, edit in Excel, and re-upload. Import merges by
-        year — it updates and adds rows, never deletes.
+        Download the current table, edit in Excel, and re-upload. Import merges
+        by year: it updates and adds rows, never deletes.
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <a href="/admin/cgt-rates/export" className={outlineBtn}>
@@ -250,8 +250,8 @@ function MultipliersForm({ multipliers }: { multipliers: CgtMultiplier[] }) {
     <div className="rounded-none border border-line bg-white p-5">
       <h3 className="font-display text-base font-semibold text-ink">Indexation multipliers</h3>
       <p className="mt-1 text-xs text-muted">
-        Revenue&rsquo;s multiplier for each acquisition year — edit a value, delete a
-        year, or add a new one. Frozen since 2003, but if indexation is ever extended
+        Revenue&rsquo;s multiplier for each acquisition year. Edit a value, delete
+        a year, or add a new one. Frozen since 2003, but if indexation is ever extended
         you can add 2003 onward here, no redeploy.
       </p>
       <div className="mt-4 flex flex-col">
@@ -288,7 +288,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "Unknown"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>
@@ -307,7 +307,7 @@ function ResetForm() {
       <h3 className="font-display text-base font-semibold text-ink">Reset to Revenue defaults</h3>
       <p className="mt-1 text-xs text-muted">
         Restore the standard rates and the official 1974–2002 multiplier table. This
-        replaces the whole table — any years you added are removed.
+        replaces the whole table, so any years you added are removed.
       </p>
       {state.status === "preview" && (
         <div className="mt-3 border border-line bg-surface-muted p-3">

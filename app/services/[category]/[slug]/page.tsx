@@ -26,7 +26,7 @@ export async function generateMetadata({
   const cat = getCategory(category);
   const item = cat?.items.find((i) => i.slug === slug);
   if (!cat || !item) return {};
-  return { title: `${item.title} — ${cat.title}`, description: item.blurb };
+  return { title: `${item.title} | ${cat.title}`, description: item.blurb };
 }
 
 export default async function SubServicePage({

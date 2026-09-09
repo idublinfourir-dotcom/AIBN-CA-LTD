@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Service-role Supabase client. SERVER-ONLY — it bypasses RLS and can manage
+ * Service-role Supabase client. SERVER-ONLY: it bypasses RLS and can manage
  * users. Only import it from server actions / route handlers. Never expose the
  * key to the browser (it is NOT a NEXT_PUBLIC_ var).
  */

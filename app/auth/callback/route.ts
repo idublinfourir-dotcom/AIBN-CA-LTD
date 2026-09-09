@@ -5,7 +5,7 @@ import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
 
 /**
  * OAuth (Google) redirect target. Exchanges the PKCE `code` for a session,
- * then routes by role: admins to /admin, everyone else to /portal — unless an
+ * then routes by role: admins to /admin, everyone else to /portal, unless an
  * explicit safe `next` was carried through.
  */
 export async function GET(request: NextRequest) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   /* Every failure below lands on the same /login?notice=oauth screen, so the
      only way to tell them apart afterwards is this log. Grep "[auth] oauth".
-     Never log `code` itself — it is a single-use credential. */
+     Never log `code` itself: it is a single-use credential. */
   const providerError = searchParams.get("error");
   if (providerError) {
     console.error("[auth] oauth: provider returned an error", {
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
       if (next) return NextResponse.redirect(`${origin}${next}`);
 
-      // Role via the pg pool (bypasses RLS) — reliable right after exchange.
+      // Role via the pg pool (bypasses RLS): reliable right after exchange.
       let role: string | null = null;
       const userId = data.user?.id;
       if (userId) {

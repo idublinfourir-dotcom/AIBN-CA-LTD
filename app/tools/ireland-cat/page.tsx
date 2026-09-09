@@ -15,11 +15,11 @@ export const metadata: Metadata = {
 const notes = [
   {
     title: "Group thresholds",
-    body: "Your relationship to the disponer sets the tax-free threshold, Group A €400,000 (children), B €40,000 (close relatives), C €20,000 (everyone else). The tool derives it for you.",
+    body: "Your relationship to the disponer sets the tax-free threshold: €400,000 for children (Group A), €40,000 for close relatives (B) and €20,000 for everyone else (C). The tool works out which one applies to you.",
   },
   {
     title: "Farm & business relief",
-    body: "Agricultural relief and business relief each cut the taxable value of qualifying property by 90%, subject to conditions (active-farmer test, six-year retention) not modelled here.",
+    body: "Agricultural relief and business relief each cut the taxable value of qualifying property by 90%. Both come with conditions, such as the active-farmer test and the six-year retention rule, which this tool does not model.",
   },
   {
     title: "Aggregation since 1991",
@@ -44,7 +44,7 @@ export default async function IrelandCatPage() {
           />
         }
         title="Ireland CAT calculator"
-        lede={`Estimate gift and inheritance tax, group thresholds, small-gift exemption, agricultural and business relief, aggregation and the pay & file date. Figures current as of ${CAT_LAST_REVIEWED}.`}
+        lede={`Estimate gift and inheritance tax with the group thresholds, the small-gift exemption, agricultural and business relief, aggregation and your pay-and-file date. Figures current as of ${CAT_LAST_REVIEWED}.`}
       />
 
       <Container className="py-16 sm:py-20">

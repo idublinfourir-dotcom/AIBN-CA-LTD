@@ -45,7 +45,7 @@ export const CALCULATOR_TOOLS = [
   },
 ] as const;
 
-/* Tab body: uppercase label + two animated layers — a top/bottom rule that
+/* Tab body: uppercase label + two animated layers. A top/bottom rule that
    draws in and a green fill that grows down from it, turning the text white.
    Active = both layers locked on; inactive = they reveal on hover/focus. */
 function TabInner({ label, active }: { label: string; active: boolean }) {

@@ -1,7 +1,7 @@
 "use client";
 
 /* Admin editor for the VAT calculator.
-   Rates form: TWO-PHASE — "Review change" previews a diff, "Confirm" writes.
+   Rates form: TWO-PHASE. "Review change" previews a diff, "Confirm" writes.
    The five statutory rate keys are fixed (categories map to them); you edit each
    row's percent/label/applies (+ optional note) in place, plus the registration
    thresholds. Inputs are disabled during the preview so you commit exactly what
@@ -63,7 +63,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "n/a";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -84,7 +84,7 @@ function SettingsForm({ config }: { config: VatConfig }) {
       <p className="mt-1 text-xs text-muted">
         The five statutory VAT rates and the registration thresholds. Rate keys are
         fixed (the goods/services categories map to them), so you can edit a rate,
-        its label and what it applies to — but not add or remove a rate.
+        its label and what it applies to, but not add or remove one.
       </p>
 
       <fieldset disabled={previewing} className="mt-4 flex flex-col gap-4 border-0 p-0">
@@ -182,7 +182,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "Unknown"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>

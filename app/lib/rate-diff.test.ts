@@ -19,11 +19,11 @@ test("flags changed vs unchanged fields", () => {
   assert.equal(d[1].kind, "unchanged");
 });
 
-test("uses a formatter and handles null → —", () => {
+test("uses a formatter and handles a null placeholder", () => {
   const d = diffRecords({ cap: 1_000_000 }, { cap: null }, [
-    { key: "cap", label: "Cap", format: (v) => (v === null || v === undefined ? "—" : `€${v}`) },
+    { key: "cap", label: "Cap", format: (v) => (v === null || v === undefined ? "n/a" : `€${v}`) },
   ]);
   assert.equal(d[0].from, "€1000000");
-  assert.equal(d[0].to, "—");
+  assert.equal(d[0].to, "n/a");
   assert.equal(d[0].kind, "changed");
 });

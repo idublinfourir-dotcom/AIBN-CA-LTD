@@ -281,7 +281,7 @@ drop policy if exists auth_admin_read_roles on public.profiles;
 create policy auth_admin_read_roles on public.profiles
   for select to supabase_auth_admin using (true);
 
--- Creates the profile row on signup. THE ADMIN EMAIL ALLOW-LIST LIVES HERE —
+-- Creates the profile row on signup. THE ADMIN EMAIL ALLOW-LIST LIVES HERE:
 -- add an email to the `in (...)` list to make that account an admin from its
 -- first login. Existing accounts instead need:
 --   update public.profiles set role = 'admin' where lower(email) = '<email>';

@@ -64,7 +64,7 @@ export default async function EnquiriesPage({
   const filter = params.filter === "unread" ? "unread" : "all";
   const idParam = params.id && /^\d+$/.test(params.id) ? params.id : null;
 
-  // Opening a thread marks it read for the admin — do this first so the list
+  // Opening a thread marks it read for the admin: do this first so the list
   // and counts below reflect it immediately (no one-render lag on the badge).
   if (idParam) await markAdminRead(idParam);
 
@@ -367,7 +367,7 @@ export default async function EnquiriesPage({
                   </dl>
                 </div>
 
-                {/* Conversation — optimistic send + pending state built in */}
+                {/* Conversation: optimistic send + pending state built in */}
                 <ChatPanel
                   fill
                   viewer="admin"

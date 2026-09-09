@@ -1,8 +1,8 @@
 "use client";
 
 /* Two-in-one tool on the Capital Allowances page:
-   • Capital allowances (tax)  — wear & tear / writing-down allowances.
-   • Working capital (finance) — assets − liabilities + liquidity ratios.
+   • Capital allowances (tax): wear & tear / writing-down allowances.
+   • Working capital (finance): assets − liabilities + liquidity ratios.
    A sub-tab switches between them; the explainer cards below follow the mode. */
 
 import { useState } from "react";
@@ -20,7 +20,7 @@ const NOTES: Record<Mode, { title: string; body: string }[]> = {
     },
     {
       title: "Cars are capped",
-      body: "Car allowances are limited to €24,000 and restricted by CO2: full relief up to 155 g/km, 50% from 156–190 g/km, and none above 190 g/km. The emissions bands change again on 1 January 2027.",
+      body: "Car allowances are capped at €24,000 and further restricted by emissions: full relief up to 155 g/km, half relief from 156 to 190 g/km, and none above 190 g/km. The emissions bands change again on 1 January 2027.",
     },
     {
       title: "The cash value",
@@ -30,11 +30,11 @@ const NOTES: Record<Mode, { title: string; body: string }[]> = {
   finance: [
     {
       title: "Working capital",
-      body: "Current assets minus current liabilities: the buffer that funds day-to-day trading. A surplus covers your short-term obligations; a deficit signals a short-term funding gap.",
+      body: "Current assets minus current liabilities. That difference is the buffer that funds day-to-day trading: a surplus covers your short-term obligations, a deficit points to a funding gap.",
     },
     {
       title: "The two ratios",
-      body: "Current ratio = assets ÷ liabilities. Quick (acid-test) ratio strips out stock: (assets − inventory) ÷ liabilities. Rules of thumb call 1.5–3 healthy, but it varies by industry.",
+      body: "Current ratio = assets ÷ liabilities. The quick (acid-test) ratio strips out stock, so it is (assets − inventory) ÷ liabilities. Anything from 1.5 to 3 is the usual rule of thumb, though the comfortable range varies by industry.",
     },
     {
       title: "Read it in context",

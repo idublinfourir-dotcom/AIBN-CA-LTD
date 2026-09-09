@@ -1,7 +1,7 @@
 /* Server-side loader for the Ireland VAT calculator.
    Thin typed wrapper over the shared getCalculatorConfig: reads the editable
    rates + thresholds (calculator_settings, key 'vat'); falls back to
-   VAT_CONFIG_DEFAULT when the row is absent, invalid, or the DB is unreachable —
+   VAT_CONFIG_DEFAULT when the row is absent, invalid, or the DB is unreachable:
    so the calculator never renders broken numbers. Never throws.
 
    VAT_CATEGORIES (the taxonomy of what maps to which rate) stays in code and is

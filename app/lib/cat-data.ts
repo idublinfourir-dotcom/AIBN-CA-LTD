@@ -1,7 +1,7 @@
 /* Server-side loader for the Ireland CAT calculator. Thin typed wrapper over the
    shared getCalculatorConfig: reads the editable rate/thresholds/reliefs
    (calculator_settings, key 'cat'); falls back to CAT_CONFIG_DEFAULT when the
-   row is absent, invalid, or the DB is unreachable — so the calculator never
+   row is absent, invalid, or the DB is unreachable, so the calculator never
    renders broken numbers. Never throws. Mirrors vat-data.ts. */
 
 import { getCalculatorConfig, type CalculatorConfigResult } from "./calculator-settings";

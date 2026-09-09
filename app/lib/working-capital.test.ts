@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { computeWorkingCapital } from "./working-capital.ts";
 
-test("Surplus — assets exceed liabilities", () => {
+test("Surplus: assets exceed liabilities", () => {
   const r = computeWorkingCapital({
     currentAssets: 200_000,
     currentLiabilities: 100_000,
@@ -21,21 +21,21 @@ test("Surplus — assets exceed liabilities", () => {
   assert.equal(r.quickRatio, 1.5); // (200k − 50k) / 100k
 });
 
-test("Deficit — liabilities exceed assets", () => {
+test("Deficit: liabilities exceed assets", () => {
   const r = computeWorkingCapital({ currentAssets: 80_000, currentLiabilities: 100_000 });
   assert.equal(r.workingCapital, -20_000);
   assert.equal(r.direction, "deficit");
   assert.equal(r.currentRatio, 0.8);
 });
 
-test("Balanced — assets equal liabilities", () => {
+test("Balanced: assets equal liabilities", () => {
   const r = computeWorkingCapital({ currentAssets: 100_000, currentLiabilities: 100_000 });
   assert.equal(r.workingCapital, 0);
   assert.equal(r.direction, "balanced");
   assert.equal(r.currentRatio, 1);
 });
 
-test("No current liabilities — ratios are null (no divide-by-zero)", () => {
+test("No current liabilities: ratios are null (no divide-by-zero)", () => {
   const r = computeWorkingCapital({ currentAssets: 50_000, currentLiabilities: 0 });
   assert.equal(r.workingCapital, 50_000);
   assert.equal(r.direction, "surplus");
@@ -47,7 +47,7 @@ test("Quick ratio excludes inventory; inventory can't exceed current assets", ()
   const r = computeWorkingCapital({
     currentAssets: 100_000,
     currentLiabilities: 50_000,
-    inventory: 250_000, // absurd — capped at current assets
+    inventory: 250_000, // absurd, capped at current assets
   });
   assert.equal(r.inventory, 100_000);
   assert.equal(r.quickRatio, 0); // (100k − 100k) / 50k
@@ -59,7 +59,7 @@ test("Ratios round to 2dp", () => {
   assert.equal(r.currentRatio, 3.33); // 100/30 = 3.333…
 });
 
-test("Edge inputs — zero and negatives clamp to zero", () => {
+test("Edge inputs: zero and negatives clamp to zero", () => {
   const z = computeWorkingCapital({ currentAssets: 0, currentLiabilities: 0 });
   assert.equal(z.workingCapital, 0);
   assert.equal(z.direction, "balanced");

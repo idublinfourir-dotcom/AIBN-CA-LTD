@@ -20,7 +20,7 @@ export function Hero() {
       <HeroVideo
         clips={[
           { src: "/hero-1.mp4", poster: "/hero-1.jpg" },
-          // Dublin Docklands / IFSC — River Liffey and the Samuel Beckett Bridge
+          // Dublin Docklands / IFSC: River Liffey and the Samuel Beckett Bridge
           { src: "/hero-2.mp4", poster: "/hero-2.jpg" },
           // River Liffey toward the Samuel Beckett Bridge and Convention Centre
           { src: "/hero-3.mp4", poster: "/hero-3.jpg" },
@@ -204,7 +204,7 @@ export function LogoStrip() {
             <li key={name}>{name}</li>
           ))}
         </ul>
-        {/* animated marquee — linear, pauses on hover, masked at the edges */}
+        {/* animated marquee: linear, pauses on hover, masked at the edges */}
         <div
           aria-hidden="true"
           className="group relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
@@ -236,7 +236,7 @@ export function Services() {
           <SectionHeading
             eyebrow="What we do"
             title="One firm for the whole journey."
-            lede="Year-end accounts, payroll, tax, a part-time CFO: take one or the lot. Across Ireland."
+            lede="Year-end accounts, payroll, tax, a part-time CFO. Take one service or the lot, anywhere in Ireland."
           />
           <Link
             href="/services"
@@ -393,7 +393,7 @@ const aiCapabilities: { icon: AiIcon; title: string; note: string }[] = [
   {
     icon: "forecast",
     title: "Forecasting & insight",
-    note: "See what’s coming: cash-flow forecasts, anomaly detection, live reporting.",
+    note: "Cash-flow forecasts, anomaly detection and live reporting, so you see what is coming.",
   },
   {
     icon: "automate",
@@ -477,7 +477,7 @@ export function Industries() {
         <Reveal delay={120}>
         <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
           {industries.map((industry, i) => {
-            // last card spans both columns when the count is odd — no orphan cell
+            // last card spans both columns when the count is odd, no orphan cell
             const spanFull =
               industries.length % 2 === 1 && i === industries.length - 1;
             return (
@@ -631,7 +631,7 @@ const faqs = [
     answer:
       "Not hard at all, for you. You sign one letter of engagement; we contact your previous accountant, collect handover records and pick up mid-year without missing a deadline.",
   },
-  /* Pricing FAQ hidden while the fee model is being decided — restore this
+  /* Pricing FAQ hidden while the fee model is being decided: restore this
      entry when pricing goes back up:
   {
     question: "How does your pricing work?",

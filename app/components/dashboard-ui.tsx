@@ -5,7 +5,7 @@ import { LogoutButton } from "./logout-button";
 import { Icon } from "./dashboard-icons";
 import { DashNav, type DashNavItem } from "./dashboard-nav";
 
-/** First letters of up to two words — "Jane Doe" → "JD", "jane@x.com" → "J". */
+/** First letters of up to two words: "Jane Doe" → "JD", "jane@x.com" → "J". */
 export function initialsOf(name: string | null | undefined, email: string) {
   const source = name?.trim() || email;
   const words = source.split(/[\s@._-]+/).filter(Boolean);
@@ -55,7 +55,7 @@ const badgeTones = {
 /**
  * Shared chrome for /admin and /portal: dark sidebar with icon nav, white
  * topbar with the signed-in user, muted content canvas. Mirrors the marketing
- * site's language — sharp corners, navy-900 dark surface, signal-green accent.
+ * site's language: sharp corners, navy-900 dark surface, signal-green accent.
  */
 export function DashboardShell({
   title,
@@ -302,11 +302,11 @@ export function SparkBars({
 }
 
 const chipTones = {
-  /** Fresh / positive — brand green tint. */
+  /** Fresh / positive: brand green tint. */
   green: { chip: "bg-secondary-50 text-secondary-500", dot: "bg-secondary-400" },
-  /** Active / needs attention — solid dark. */
+  /** Active / needs attention: solid dark. */
   dark: { chip: "bg-navy-900 text-white", dot: "bg-primary-400" },
-  /** Settled / archived — quiet grey. */
+  /** Settled / archived: quiet grey. */
   muted: { chip: "bg-surface-muted text-muted", dot: "bg-muted/60" },
 } as const;
 

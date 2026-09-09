@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const notes = [
   {
     title: "Indexation for older assets",
-    body: "The cost of an asset acquired before 2003 is uplifted by Revenue's official multiplier for the year of purchase, so inflation isn't taxed as gain. Indexation is frozen, costs from 2003 onward get no uplift.",
+    body: "The cost of an asset bought before 2003 is uplifted by Revenue's official multiplier for the year of purchase, so inflation is not taxed as gain. Indexation has been frozen since then, which means costs from 2003 onward get no uplift at all.",
   },
   {
     title: "Reliefs and rates",
@@ -23,7 +23,7 @@ const notes = [
   },
   {
     title: "Editable, verified rates",
-    body: "The rates and the full multiplier table are sourced from revenue.ie and stored so they can be updated after each Budget without a redeploy. Estimates only, reliefs like retirement relief and share-matching rules aren't modelled.",
+    body: "The rates and the full multiplier table come from revenue.ie and are stored so they can be updated after each Budget without a redeploy. Treat the output as an estimate: retirement relief and the share-matching rules are not modelled.",
   },
 ];
 

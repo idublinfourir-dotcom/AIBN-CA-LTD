@@ -1,14 +1,14 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Ireland Capital Allowances calculator — wear & tear / writing-down allowances
+   Ireland Capital Allowances calculator: wear & tear / writing-down allowances
    on capital expenditure (plant & machinery, cars, industrial buildings, and
    100% accelerated allowances for energy-efficient equipment).
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
+   PURE FUNCTIONS ONLY, no React, no I/O, so every figure is unit-testable.
    The EDITABLE rates/limits (per-class rate + years, the €24,000 car cap, the
-   trading CT rate) live in CA_CONFIG_DEFAULT below — the single code source of
+   trading CT rate) live in CA_CONFIG_DEFAULT below: the single code source of
    truth (loader fallback AND the default arg of computeCapitalAllowance). The
    CO2 emissions groups (CAR_CO2_GROUPS factors) and CAR_2027_NOTE are STATUTORY
-   and stay in code — not admin-editable.
+   and stay in code, not admin-editable.
 
    HOW IT WORKS
    - Capital allowances are tax depreciation: the cost of a qualifying asset is
@@ -27,9 +27,9 @@
        taxsummaries.pwc.com/ireland/corporate/deductions
    - Car €24,000 cap + CO2 categories (Group 1 ≤155 g/km full; Group 2 156–190
      g/km 50%; Group 3 >190 g/km nil), s380K TCA 1997:
-       revenue.ie Tax and Duty Manual Part 11-00-01 (Cars — Capital Allowances)
+       revenue.ie Tax and Duty Manual Part 11-00-01 (Cars: Capital Allowances)
 
-   Figures are ESTIMATES for guidance only — not tax advice. Balancing
+   Figures are ESTIMATES for guidance only, not tax advice. Balancing
    allowances/charges on disposal, private-use restrictions, leasing rules and
    scheme-specific building reliefs are NOT modelled. Confirm with a qualified
    adviser or revenue.ie.
@@ -40,7 +40,7 @@ export const CA_LAST_REVIEWED = "July 2026";
 export const CA_SOURCE_URL =
   "https://www.revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/capital-allowances-and-deductions.aspx";
 
-/** Specified amount — the cost ceiling for cars. */
+/** Specified amount: the cost ceiling for cars. */
 export const MOTOR_CAP_EUR = 24_000;
 /** Trading CT rate used to show the cash value of the allowances. */
 export const TRADING_CT_PERCENT = 12.5;
@@ -62,7 +62,7 @@ export interface AssetClass {
   years: number;
   /** True when the whole cost is written off in year one (ACA). */
   firstYearFull: boolean;
-  /** True for cars — the €24,000 cap + CO2 restriction apply. */
+  /** True for cars: the €24,000 cap + CO2 restriction apply. */
   co2Restricted?: boolean;
   note: string;
 }
@@ -148,7 +148,7 @@ export function getCo2Group(key: Co2GroupKey): Co2Group {
   return g;
 }
 
-/** Flagged on the car result — the emissions bands change on this date. */
+/** Flagged on the car result: the emissions bands change on this date. */
 export const CAR_2027_NOTE =
   "From 1 January 2027 the car bands change to €24,000 for 0–120 g/km, €12,000 for 121–140 g/km and nil above 140 g/km. These figures use the rules in force in 2026.";
 
@@ -158,9 +158,9 @@ export const CAR_2027_NOTE =
     CO2 groups + notes are NOT here (statutory / prose, stay code). */
 export interface CaConfig {
   classes: AssetClass[];
-  /** Car cost ceiling (specified amount), € — MOTOR_CAP_EUR. */
+  /** Car cost ceiling (specified amount), €: MOTOR_CAP_EUR. */
   motorCapEur: number;
-  /** Trading CT rate used for the cash-value line, % — TRADING_CT_PERCENT. */
+  /** Trading CT rate used for the cash-value line, %: TRADING_CT_PERCENT. */
   tradingCtPercent: number;
 }
 
@@ -255,7 +255,7 @@ export interface CapitalAllowanceResult {
   annualAllowance: number;
   /** Allowance claimed in year one. */
   firstYearAllowance: number;
-  /** Final year's allowance — carries the rounding remainder so the schedule
+  /** Final year's allowance: carries the rounding remainder so the schedule
       sums back to allowableCost exactly. */
   finalYearAllowance: number;
   /** Total allowances over the life = allowableCost. */

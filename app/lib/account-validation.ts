@@ -1,5 +1,5 @@
 /* Pure account-field validators shared by the settings server actions.
-   No React/IO — unit-tested with node:test. Floors mirror signup:
+   No React/IO. Unit-tested with node:test. Floors mirror signup:
    name >= 2, password >= 8. */
 
 export function validateDisplayName(name: string): string | null {

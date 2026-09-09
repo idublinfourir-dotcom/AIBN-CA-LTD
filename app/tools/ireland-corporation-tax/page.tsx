@@ -23,7 +23,7 @@ const notes = [
   },
   {
     title: "Reliefs come next",
-    body: "Chargeable gains, the R&D credit, Knowledge Development Box, close-company surcharge and start-up relief change the final bill. That's a conversation, not a slider.",
+    body: "Chargeable gains, the R&D credit, the Knowledge Development Box, the close-company surcharge and start-up relief all change the final bill. That is a conversation to have with us, not a slider.",
   },
 ];
 

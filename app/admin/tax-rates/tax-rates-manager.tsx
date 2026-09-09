@@ -3,7 +3,7 @@
 /* Admin editor for the Ireland income tax calculator: one card per tax year,
    covering income tax bands/credits, USC, PRSI and pension relief. Saving
    upserts the year's JSONB row in tax_rates and revalidates the public
-   calculator — no deploy. Percentages are shown and entered as percent
+   calculator, no deploy. Percentages are shown and entered as percent
    (20, 0.5) and stored as fractions (0.2, 0.005). */
 
 import { useActionState } from "react";
@@ -88,27 +88,27 @@ function YearForm({ rates }: { rates: YearRates }) {
         Tax year {rates.year}
       </h3>
 
-      <SectionTitle>Income tax — rates &amp; bands</SectionTitle>
+      <SectionTitle>Income tax rates &amp; bands</SectionTitle>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Pct name="it_standard_rate" value={it.standardRate} label="Standard rate" />
         <Pct name="it_higher_rate" value={it.higherRate} label="Higher rate" />
         <Euro name="age_credit_threshold" value={it.ageCreditThreshold} label="Age credit from age" />
-        <Euro name="srcop_single" value={it.srcop.single} label="SRCOP — single (€)" />
-        <Euro name="srcop_single_spccc" value={it.srcop.singleWithSpccc} label="SRCOP — single + SPCCC (€)" />
-        <Euro name="srcop_married_one" value={it.srcop.marriedOneIncome} label="SRCOP — married, 1 income (€)" />
-        <Euro name="srcop_married_increase" value={it.srcop.marriedBandIncrease} label="SRCOP — married 2nd-income increase, max (€)" />
+        <Euro name="srcop_single" value={it.srcop.single} label="SRCOP, single (€)" />
+        <Euro name="srcop_single_spccc" value={it.srcop.singleWithSpccc} label="SRCOP, single + SPCCC (€)" />
+        <Euro name="srcop_married_one" value={it.srcop.marriedOneIncome} label="SRCOP, married with 1 income (€)" />
+        <Euro name="srcop_married_increase" value={it.srcop.marriedBandIncrease} label="SRCOP, married 2nd-income increase, max (€)" />
       </div>
 
-      <SectionTitle>Income tax — credits (€)</SectionTitle>
+      <SectionTitle>Income tax credits (€)</SectionTitle>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Euro name="credit_personal_single" value={it.credits.personalSingle} label="Personal — single" />
-        <Euro name="credit_personal_married" value={it.credits.personalMarried} label="Personal — married" />
+        <Euro name="credit_personal_single" value={it.credits.personalSingle} label="Personal, single" />
+        <Euro name="credit_personal_married" value={it.credits.personalMarried} label="Personal, married" />
         <Euro name="credit_employee_paye" value={it.credits.employeePaye} label="Employee PAYE" />
         <Euro name="credit_earned_income" value={it.credits.earnedIncome} label="Earned income" />
         <Euro name="credit_employment_cap" value={it.credits.employmentCombinedCap} label="PAYE + earned cap" />
         <Euro name="credit_spccc" value={it.credits.spccc} label="SPCCC" />
-        <Euro name="credit_age_single" value={it.credits.ageSingle} label="Age — single" />
-        <Euro name="credit_age_married" value={it.credits.ageMarried} label="Age — married" />
+        <Euro name="credit_age_single" value={it.credits.ageSingle} label="Age, single" />
+        <Euro name="credit_age_married" value={it.credits.ageMarried} label="Age, married" />
       </div>
 
       <SectionTitle>USC</SectionTitle>
@@ -144,12 +144,12 @@ function YearForm({ rates }: { rates: YearRates }) {
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Euro name="pension_earnings_cap" value={rates.pension.earningsCap} label="Earnings cap (€)" />
         {PENSION_BANDS.map((b, i) => (
-          <Pct key={b.name} name={b.name} value={rates.pension.ageBands[i]?.rate ?? 0} label={`Relief — ${b.label}`} />
+          <Pct key={b.name} name={b.name} value={rates.pension.ageBands[i]?.rate ?? 0} label={`Relief, ${b.label}`} />
         ))}
       </div>
       <p className="mt-2 text-xs text-muted">
         Age boundaries of the relief bands are fixed (&lt;30, 30–39, 40–49, 50–54,
-        55–59, 60+) — only the relief % is editable.
+        55–59, 60+); only the relief % is editable.
       </p>
 
       <div className="mt-5 flex items-center gap-3">

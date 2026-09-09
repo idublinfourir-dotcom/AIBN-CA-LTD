@@ -3,7 +3,7 @@
    indexation multiplier table (cgt_multipliers, 29 rows) from Postgres, both
    editable in /admin/cgt-rates; falls back to the versioned constants in
    ireland-cgt.ts when the DB is unreachable, a row is missing, or a stored
-   value fails validation — so the calculator never renders broken numbers.
+   value fails validation, so the calculator never renders broken numbers.
 
    Reads go through the pg pool (app/lib/db.ts), matching tax-data.ts. */
 
@@ -41,7 +41,7 @@ export async function getCgtData(): Promise<CgtData> {
     const config = parseCgtConfig(cfgRows[0]?.config) ?? CGT_CONFIG_DEFAULT;
     const reviewedAt = cfgRows[0]?.reviewed_at ?? null;
 
-    // pg returns numeric as a string — coerce and drop any invalid row.
+    // pg returns numeric as a string: coerce and drop any invalid row.
     let multipliers: CgtMultiplier[] = CGT_MULTIPLIERS_DEFAULT;
     if (multRows.length > 0) {
       const parsed = multRows

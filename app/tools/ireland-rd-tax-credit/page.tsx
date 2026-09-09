@@ -15,15 +15,15 @@ export const metadata: Metadata = {
 const notes = [
   {
     title: "35% of qualifying spend",
-    body: "The credit is 35% of qualifying R&D expenditure, on top of the 12.5% trading deduction the same spend attracts, a combined benefit of about 47.5%. Rate applies for accounting periods commencing on or after 1 January 2026.",
+    body: "The credit is 35% of qualifying R&D expenditure, and the same spend still attracts the 12.5% trading deduction, so the combined benefit lands around 47.5%. This rate applies to accounting periods starting on or after 1 January 2026.",
   },
   {
     title: "Paid over three years",
-    body: "The first €87,500 (or 50% of the credit, whichever is greater) is payable in year one; the balance follows across years two and three. You elect cash refund or offset against tax due, it isn't netted against Corporation Tax first.",
+    body: "The first €87,500, or 50% of the credit if that is greater, is payable in year one, and the balance follows across years two and three. You elect either a cash refund or an offset against tax due; it is not netted against corporation tax first.",
   },
   {
     title: "Qualifying is the hard part",
-    body: "The science test, eligible cost categories, subcontractor and grant limits and the capital/revenue split shape a real claim, and Revenue can audit it. Use this to size the benefit, then let us build the claim.",
+    body: "A real claim turns on the science test, the eligible cost categories, subcontractor and grant limits, and the capital/revenue split, and Revenue can audit all of it. Use this to size the benefit, then let us build the claim.",
   },
 ];
 

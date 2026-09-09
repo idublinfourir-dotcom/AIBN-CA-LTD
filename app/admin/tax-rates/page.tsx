@@ -12,7 +12,7 @@ export default async function TaxRatesPage() {
   await requireAdmin();
 
   // Effective rates: DB row when present and valid, otherwise the versioned
-  // fallback config — exactly what the public calculator uses.
+  // fallback config: exactly what the public calculator uses.
   const ratesByYear = await getTaxRates();
   const years = TAX_YEARS.map((y) => ratesByYear[y]);
 
@@ -28,8 +28,8 @@ export default async function TaxRatesPage() {
           >
             Ireland income tax calculator
           </a>
-          . Update these after a Budget — changes go live immediately, no deploy
-          needed. Percentages are entered as percent (e.g. 20 or 0.5).
+          . Update these after a Budget. Changes go live immediately, with no
+          deploy needed. Percentages are entered as percent (e.g. 20 or 0.5).
         </p>
       </header>
 

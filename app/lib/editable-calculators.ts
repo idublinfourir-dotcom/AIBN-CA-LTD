@@ -4,7 +4,7 @@
    This is NOT "all calculators": income tax and mortgage have their own mature
    editors and are intentionally excluded from the reminder.
 
-   Two-table reality — CGT stores reviewed_at in `cgt_settings` (its own loader);
+   Two-table reality: CGT stores reviewed_at in `cgt_settings` (its own loader);
    the Project-B calculators store it in `calculator_settings`. So each entry
    carries its OWN getReviewedAt loader rather than one unified query. Each phase
    appends its entry when that calculator ships, so P1 shows only CGT (parity

@@ -1,4 +1,4 @@
-/* Server-side guardrails for capital-allowances admin edits. PURE — reject
+/* Server-side guardrails for capital-allowances admin edits. PURE: reject
    clearly-wrong values with a message; the two-step preview is the guard
    against subtle mistakes. Only the per-class rate + years and the two scalars
    (car cap, trading CT rate) are editable; the label/note/flags are merged from

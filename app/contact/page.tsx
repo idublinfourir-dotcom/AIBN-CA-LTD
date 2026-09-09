@@ -14,7 +14,7 @@ const nextSteps = [
   "A free 30-minute conversation about where things stand.",
   // Fee wording hidden for now; was "A fixed-fee proposal in writing: take it
   // or leave it."
-  "A proposal in writing with the scope set out: take it or leave it.",
+  "A written proposal with the scope set out. Take it or leave it.",
 ];
 
 export default function ContactPage() {
@@ -23,7 +23,7 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Start the conversation."
-        lede="Tell us where your books stand. A partner reads every enquiry: you will not be handed to a sales team."
+        lede="Tell us where your books stand. A partner reads every enquiry, so you will not be handed off to a sales team."
         image="teamMeeting"
       />
 

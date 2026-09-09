@@ -3,7 +3,7 @@
 /* Admin save action for the VAT calculator.
    saveVatSettings is TWO-PHASE: the first submit previews a diff and writes
    nothing; the Confirm submit carries a normalized `payload` and only THAT is
-   written. The five statutory rate keys are fixed (categories map to them) —
+   written. The five statutory rate keys are fixed (categories map to them):
    the form edits each row's percent/label/applies in place; no add/remove.
    Re-checks requireAdmin on both phases; guard-railed + audited. */
 
@@ -75,7 +75,7 @@ export async function saveVatSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only. Re-parse strictly —
+  // Phase 2. Confirm: write the previewed payload only. Re-parse strictly:
   // never trust the round-tripped JSON.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
@@ -83,15 +83,15 @@ export async function saveVatSettings(
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const cfg = parseVatConfig(parsed);
-    if (!cfg) return { status: "error", message: "The change didn't validate — try again." };
+    if (!cfg) return { status: "error", message: "The change didn't validate. Please try again." };
     try {
       await saveCalculatorConfig(VAT_SETTINGS_KEY, cfg);
     } catch (err) {
       console.error("[vat] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "vat-settings",
@@ -104,7 +104,7 @@ export async function saveVatSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview: reconstruct the config from the fixed-key form fields.
+  // Phase 1. Preview: reconstruct the config from the fixed-key form fields.
   const rates: RawVatRate[] = REQUIRED_VAT_KEYS.map((key) => {
     const note = str(formData.get(`note_${key}`));
     const r: RawVatRate = {

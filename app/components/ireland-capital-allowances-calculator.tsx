@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland Capital Allowances calculator — wear & tear / writing-down allowances
+/* Ireland Capital Allowances calculator: wear & tear / writing-down allowances
    on plant & machinery (12.5%/8yr), cars (12.5%/8yr, €24k cap + CO2 restriction),
    industrial buildings (4%/25yr) and energy-efficient equipment (100% ACA).
    The user picks the asset class; this component never guesses. The editable

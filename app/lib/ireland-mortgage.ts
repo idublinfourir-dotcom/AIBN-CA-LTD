@@ -1,11 +1,11 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Ireland mortgage repayments engine — mortgages.ie-style comparison.
+   Ireland mortgage repayments engine: mortgages.ie-style comparison.
    Pure functions + a static lender-rate snapshot: no React, no I/O.
    The UI (ireland-mortgage-calculator.tsx) imports these so the figures
    stay in one auditable place.
 
    Live products and policy come from Postgres (mortgage_products /
-   mortgage_settings, editable in /admin/mortgage-rates — see
+   mortgage_settings, editable in /admin/mortgage-rates: see
    mortgage-data.ts). LENDER_PRODUCTS and DEFAULT_POLICY below are the
    seed data and the fallback when the DB is unreachable. Monthly
    payments use the standard annuity formula, which reproduces the
@@ -82,7 +82,7 @@ export interface LenderProduct {
   aprcPercent: number;
   /** Maximum loan-to-value this rate is available at (0.9 = 90%). */
   maxLtv: number;
-  /** Green mortgage — requires an energy-efficient home (BER B3 or better). */
+  /** Green mortgage: requires an energy-efficient home (BER B3 or better). */
   green?: boolean;
   /** Lender incentive shown as a badge, e.g. "2% cashback". */
   cashback?: string;
@@ -397,11 +397,11 @@ export interface ComparisonInput {
   propertyValue: number;
   loanAmount: number;
   termYears: number;
-  /** Age next birthday — oldest applicant when joint. */
+  /** Age next birthday: oldest applicant when joint. */
   age: number;
   /** Combined gross annual income of all applicants. */
   income: number;
-  /** Home has a BER of B3 or better — gates green-mortgage rates. */
+  /** Home has a BER of B3 or better: gates green-mortgage rates. */
   berB3Plus?: boolean;
 }
 
@@ -428,7 +428,7 @@ export interface ProductQuote {
    the remaining balance re-amortises at the lender's variable (revert) rate.
    E.g. €360,000 over 35y, 2y fixed @ 3.8% reverting to 4.15% →
    €1,551.09/month for 2 years, €1,623.28 for 33, total cost €680,045. */
-/* Lender illustrations total the payment rounded to the cent, so we do too —
+/* Lender illustrations total the payment rounded to the cent, so we do too:
    this is what makes the totals match published examples exactly. */
 const toCent = (n: number) => Math.round(n * 100) / 100;
 
@@ -483,7 +483,7 @@ export function quoteProduct(
 export interface ComparisonResult {
   ltv: number;
   quotes: ProductQuote[];
-  /** Rate types with at least one quote — drives the filter tabs. */
+  /** Rate types with at least one quote: drives the filter tabs. */
   availableRateTypes: RateType[];
   warnings: string[];
 }

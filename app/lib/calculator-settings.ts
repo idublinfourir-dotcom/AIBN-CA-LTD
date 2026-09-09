@@ -4,7 +4,7 @@
    editable in /admin/<calc>-rates. Every calculator's `*-data.ts` is a thin
    typed wrapper around getCalculatorConfig: it passes its own `parse` +
    code-default `fallback`, so a missing row / invalid stored value / DB error
-   all resolve to today's versioned numbers — the tool never renders broken data.
+   all resolve to today's versioned numbers: the tool never renders broken data.
 
    Mirrors cgt-data.ts, but generic: CGT keeps its own two-table loader
    (cgt_settings + cgt_multipliers); the four Project-B calculators share this.
@@ -22,7 +22,7 @@ export interface CalculatorConfigResult<T> {
 /**
  * Load a calculator's config: the DB row when present and valid, otherwise the
  * code fallback. `parse` returns a valid typed config or null (reject partial /
- * malformed JSON). Never throws — any failure falls back to `fallback`.
+ * malformed JSON). Never throws: any failure falls back to `fallback`.
  */
 export async function getCalculatorConfig<T>(
   key: string,
@@ -64,8 +64,8 @@ export async function saveCalculatorConfig(key: string, config: unknown): Promis
  * Stamp reviewed_at = now() without touching config. If the calculator has no
  * row yet (serving code defaults), inserts a CONFIG-LESS row (config stays null
  * → the code fallback remains authoritative, so no rate drift) purely to record
- * the review date — this lets the admin dismiss the reminder for an
- * un-customised calculator. Never throws — a review stamp must not block the admin.
+ * the review date: this lets the admin dismiss the reminder for an
+ * un-customised calculator. Never throws: a review stamp must not block the admin.
  */
 export async function markCalculatorReviewed(key: string): Promise<void> {
   try {

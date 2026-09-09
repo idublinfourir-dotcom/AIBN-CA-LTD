@@ -2,7 +2,7 @@
 
 /* Shared form primitives + compliance chrome for the Tools calculators.
    Same Tailwind tokens as app/components/ui.tsx Button and the fields in
-   ireland-income-tax-calculator.tsx — no new design system, just one place
+   ireland-income-tax-calculator.tsx, no new design system, just one place
    the VAT and Corporation Tax calculators both draw from. */
 
 import { useId, useState } from "react";
@@ -208,7 +208,7 @@ export function NumericField({
 
 /* ---------- proportion bar ----------
    A single hairline-bordered track split into coloured segments sized by
-   value — visualises how a total divides (trading vs passive tax, net vs
+   value: visualises how a total divides (trading vs passive tax, net vs
    VAT). Empty/zero renders a quiet muted track. */
 
 export interface BarSegment {

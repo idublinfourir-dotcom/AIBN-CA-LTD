@@ -1,5 +1,5 @@
 /* Change-audit log, shared by every editable calculator (Project B reuses it).
-   recordAudit never throws — an audit failure must not block the actual change.
+   recordAudit never throws: an audit failure must not block the actual change.
    Reads/writes go through the pg pool (app/lib/db.ts). */
 
 import { query } from "./db";

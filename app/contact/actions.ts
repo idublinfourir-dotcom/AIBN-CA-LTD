@@ -33,7 +33,7 @@ async function sendEnquiryEmail(values: {
 
   if (!serviceId || !templateId || !publicKey || !privateKey) {
     console.warn(
-      "[enquiry] EmailJS not fully configured (need EmailJs_Template_KEY) — skipping email",
+      "[enquiry] EmailJS not fully configured (need EmailJs_Template_KEY); skipping email",
     );
     return;
   }
@@ -51,7 +51,7 @@ async function sendEnquiryEmail(values: {
         // collects name/email/company/service/message; service is also exposed
         // as {{budget}} and {{title}} for templates that use those names.
         template_params: {
-          // The EmailJS template's "To email" is {{to_email}} — it MUST be sent
+          // The EmailJS template's "To email" is {{to_email}}: it MUST be sent
           // or the API rejects with 422 "recipients address is corrupted".
           // This is the firm's monitored inbox; reply_to is the enquirer.
           to_email: "idublinfourir@gmail.com",
@@ -59,9 +59,9 @@ async function sendEnquiryEmail(values: {
           name: values.name,
           email: values.email,
           reply_to: values.email,
-          company: values.company || "—",
-          service: values.service || "—",
-          budget: values.service || "—",
+          company: values.company || "Not provided",
+          service: values.service || "Not specified",
+          budget: values.service || "Not specified",
           title: values.service || "your enquiry",
           message: values.message,
         },
@@ -130,8 +130,8 @@ export async function submitEnquiry(
     console.error("[enquiry] session read failed (continuing anonymous):", err);
   }
 
-  // Save to Postgres (Supabase). Parameterised query ($1..$6) — never string
-  // interpolation — so user input can't be used for SQL injection.
+  // Save to Postgres (Supabase). Parameterised query ($1..$6), never string
+  // interpolation, so user input can't be used for SQL injection.
   try {
     await query(
       `insert into enquiries (name, email, company, service, message, user_id)

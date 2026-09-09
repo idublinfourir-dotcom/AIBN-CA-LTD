@@ -166,7 +166,7 @@ export async function saveTaxYear(
     );
   } catch (err) {
     console.error("[tax-rates] save failed:", err);
-    return { status: "error", message: "Could not save — check the values." };
+    return { status: "error", message: "Could not save. Check the values." };
   }
 
   revalidate();

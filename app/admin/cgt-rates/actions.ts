@@ -4,9 +4,9 @@
 
    - saveCgtSettings is TWO-PHASE: the first submit returns a preview (diff) and
      writes nothing; the Confirm submit carries a normalized `payload` and only
-     THAT is written — so you always commit exactly what you previewed.
-   - The multiplier rows (edit/add/delete) are immediate — a single number
-     doesn't need a preview — but every write is guard-railed and audited.
+     THAT is written, so you always commit exactly what you previewed.
+   - The multiplier rows (edit/add/delete) are immediate: a single number
+     doesn't need a preview, but every write is guard-railed and audited.
    Both re-check requireAdmin. */
 
 import { revalidatePath } from "next/cache";
@@ -60,14 +60,14 @@ export async function saveCgtSettings(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: write the previewed payload only.
+  // Phase 2. Confirm: write the previewed payload only.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(payloadRaw);
     } catch {
-      return { status: "error", message: "Could not read the change — try again." };
+      return { status: "error", message: "Could not read the change. Please try again." };
     }
     const v = validateCgtConfig(parsed as never);
     if (!v.ok) return { status: "error", message: v.message };
@@ -79,7 +79,7 @@ export async function saveCgtSettings(
       );
     } catch (err) {
       console.error("[cgt] settings save failed:", err);
-      return { status: "error", message: "Could not save — try again." };
+      return { status: "error", message: "Could not save. Please try again." };
     }
     await recordAudit({
       area: "cgt-settings",
@@ -92,7 +92,7 @@ export async function saveCgtSettings(
     return { status: "saved", message: "Rates saved." };
   }
 
-  // Phase 1 — preview.
+  // Phase 1: preview.
   const v = validateCgtConfig({
     standardRatePercent: num(formData.get("standard_rate")),
     annualExemptionEur: num(formData.get("annual_exemption")),
@@ -222,7 +222,7 @@ export async function importCgtMultipliers(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm: upsert the previewed rows.
+  // Phase 2. Confirm: upsert the previewed rows.
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw === "string" && payloadRaw) {
     let rows: CgtMultiplier[];
@@ -233,7 +233,7 @@ export async function importCgtMultipliers(
     }
     if (!Array.isArray(rows) || rows.length === 0)
       return { status: "error", message: "Nothing to import." };
-    // Re-validate — never trust the round-tripped payload.
+    // Re-validate, never trust the round-tripped payload.
     for (const r of rows) {
       if (
         !r ||
@@ -279,7 +279,7 @@ export async function importCgtMultipliers(
     return { status: "saved", message: `Imported ${rows.length} row(s).` };
   }
 
-  // Phase 1 — preview: parse the uploaded file.
+  // Phase 1. Preview: parse the uploaded file.
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0)
     return { status: "error", message: "Choose a CSV file first." };
@@ -288,7 +288,7 @@ export async function importCgtMultipliers(
   if (errors.length)
     return {
       status: "error",
-      message: `CSV problems — ${errors.slice(0, 3).join("; ")}${errors.length > 3 ? " …" : ""}`,
+      message: `CSV problems: ${errors.slice(0, 3).join("; ")}${errors.length > 3 ? " …" : ""}`,
     };
   if (rows.length === 0) return { status: "error", message: "No valid rows in the file." };
 
@@ -323,7 +323,7 @@ export async function resetCgtDefaults(
 
   if (formData.get("cancel")) return { status: "idle" };
 
-  // Phase 2 — confirm.
+  // Phase 2: confirm.
   if (formData.get("payload") === "defaults") {
     try {
       await query(
@@ -348,7 +348,7 @@ export async function resetCgtDefaults(
       );
     } catch (err) {
       console.error("[cgt] reset failed:", err);
-      return { status: "error", message: "Could not reset — try again." };
+      return { status: "error", message: "Could not reset. Please try again." };
     }
     await recordAudit({
       area: "cgt-settings",
@@ -360,7 +360,7 @@ export async function resetCgtDefaults(
     return { status: "saved", message: "Reset to Revenue defaults." };
   }
 
-  // Phase 1 — preview.
+  // Phase 1: preview.
   const { config, multipliers } = await getCgtData();
   const cfgDiff = diffRecords(
     config as unknown as Record<string, unknown>,

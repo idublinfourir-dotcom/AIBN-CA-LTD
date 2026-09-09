@@ -2,7 +2,7 @@
 
 /* Admin editor for the Ireland mortgage comparison: Central Bank policy
    numbers + the lender rate table. Saving revalidates /tools/ireland, so
-   changes go live immediately — no deploy. */
+   changes go live immediately, no deploy. */
 
 import { useActionState } from "react";
 import { RATE_TYPE_LABELS, type RateType } from "../../lib/ireland-mortgage";
@@ -103,8 +103,8 @@ function SettingsForm({ settings }: { settings: AdminSettings }) {
         Central Bank policy & labels
       </h3>
       <p className="mt-1 text-xs text-muted">
-        When the Central Bank changes the lending rules, update the numbers here
-        — the calculator applies them immediately.
+        When the Central Bank changes the lending rules, update the numbers
+        here and the calculator applies them immediately.
       </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -192,7 +192,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
             <input name="max_ltv_percent" type="number" step="1" min="1" max="100" defaultValue={product?.maxLtvPercent ?? 90} className={inputClass} required />
           </Field>
           <Field label="Revert rate after fixed (%)">
-            <input name="revert_rate_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.revertRatePercent ?? ""} placeholder="none — rate runs whole term" className={inputClass} />
+            <input name="revert_rate_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.revertRatePercent ?? ""} placeholder="none, rate runs whole term" className={inputClass} />
           </Field>
           <Field label="Cashback (% of loan)">
             <input name="cashback_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.cashbackPercent ?? ""} placeholder="none" className={inputClass} />
@@ -254,7 +254,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           action={deleteAction}
           className="mt-2"
           onSubmit={(e) => {
-            if (!confirm(`Delete ${product.lender} — ${product.name}?`)) {
+            if (!confirm(`Delete ${product.lender} ${product.name}?`)) {
               e.preventDefault();
             }
           }}

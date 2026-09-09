@@ -7,7 +7,7 @@ const PROTECTED = ["/portal", "/admin"];
  * Refreshes the Supabase session on every matched request and gates the
  * authenticated areas. Role checks (admin) happen in the /admin layout.
  *
- * IMPORTANT: do not run logic between `createServerClient` and `getUser()` —
+ * IMPORTANT: do not run logic between `createServerClient` and `getUser()`:
  * the call is what refreshes the cookie.
  */
 export async function updateSession(request: NextRequest) {
