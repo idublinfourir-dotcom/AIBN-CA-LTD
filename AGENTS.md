@@ -159,7 +159,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `supabase-js`, and then scope it read-only to that need.
 - **Secrets** live in `.env.local` locally — `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, **`SUPABASE_SERVICE_ROLE_KEY`** (server-only,
-  never `NEXT_PUBLIC`), and `EmailJs_*` keys. Same keys set in **Vercel**
+  never `NEXT_PUBLIC`), and the `SMTP_*` / `MAIL_*` keys. Same keys set in **Vercel**
   project env for prod. Never echo or commit them. Run Supabase security advisors
   after any DDL.
 - **Security headers** set in `next.config.ts` (`headers()`, all routes): CSP, HSTS
@@ -196,23 +196,54 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
     2026-07) — do not invent a new storage shape.
 
-### Contact email (EmailJS)
+### Outbound email (SMTP)
 
-- `app/contact/actions.ts` saves enquiry to Postgres, then sends email via
-  **EmailJS REST API** server-side, wrapped in Next's `after()` so it never
-  blocks form response (best-effort — failures logged, not surfaced). Keys:
-  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_Template_KEY`, `EmailJs_PUBLIC_KEY`,
-  `EmailJs_Private_KEY`.
+- **EmailJS is gone.** Both emails the site sends now go over plain SMTP through
+  `app/lib/mailer.ts` (nodemailer). `sendMail` is best-effort: it returns `false`
+  and logs on a missing config or a refused send, and never throws, so a mail
+  problem can never take down the database write that preceded it. It is
+  server-only. The `EmailJs_*` env vars are dead and can be deleted.
+- Config is `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS`, plus optional
+  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`). With none set,
+  sending is a logged no-op and the app still works. Verified end to end
+  2026-09-10 against Zoho: **`smtp.zoho.com:465`**, sending as
+  `info@aibncharteredaccountants.ie`, authenticating with a 12-character Zoho
+  app password. **`smtppro.zoho.com` returns `554 5.7.8 Access Restricted` for
+  this account** on 465 and 587 despite being what Zoho's docs recommend for
+  custom domains: do not "fix" the host to smtppro.
+- Both email bodies are composed in this repo, so their layout is reviewable and
+  changes in a commit: `app/lib/reply-email.ts` (admin reply to a client) and
+  `app/lib/enquiry-email.ts` (new-enquiry notification to the firm). Email
+  clients are hostile: tables for structure, inline styles only, no `<style>`
+  blocks, 600px width. Every interpolated value goes through `escapeHtml`, and
+  every message ships a plain-text alternative (its absence is a spam signal).
+- **Admin replies**: `app/admin/enquiries/actions.ts` posts the reply into the
+  thread, then emails the client under `after()` so the send never blocks the UI.
+  Recipient is `coalesce(profiles.email, enquiries.email)`, so an enquiry owned
+  by an account goes to the address that account logs in with, and a guest
+  enquiry falls back to the address typed on the form.
+- The reply email is **greeting + the admin's text + firm name, and nothing
+  else**: no quoted enquiry, no portal link, no timestamp. That is a product
+  decision, not an oversight (asked and confirmed 2026-09-10). Do not "helpfully"
+  append context to it.
+- **Enquiry notifications**: `app/contact/actions.ts` saves the row, then mails
+  `site.enquiryInbox` (in `app/lib/content.ts`) under `after()`, with the
+  enquirer as `replyTo` so hitting reply answers the customer. Note that
+  `site.email` (published on the site) and `site.enquiryInbox` (where alerts
+  land) are deliberately different values.
+- Historical trap, now fixed: the old EmailJS template's "To email" field read
+  `{{email}}`, which `app/contact/actions.ts` filled with the ENQUIRER's address,
+  so notifications were addressed to the person submitting the form rather than
+  to the firm. Nothing surfaced it because the send returned 200 and the failure
+  path only logged. Moving to SMTP removed the class of bug: the recipient is now
+  an argument in code, not a dashboard field.
+- The reply email is a copy, not a channel: nothing parses inbound mail, so a
+  client replying from their mail app reaches the mailbox but not the thread.
+  Two-way would need an inbound provider writing a `sender = 'client'` row.
 - Public signup and contact submissions use DB-backed fixed-window throttling
   from `app/lib/rate-limit.ts` (per IP + per normalised email). Only SHA-256
   identifiers are stored in `request_rate_limits`; never store raw IP/email
   throttle keys or replace this with per-process memory on serverless.
-- **The template's "To email" field is `{{to_email}}`** — `template_params`
-  MUST include `to_email` (+ `to_name`) or EmailJS returns HTTP 422 "recipients
-  address is corrupted" and the notification silently never sends (the
-  best-effort `after()` call only logs it). `reply_to` is the enquirer;
-  `to_email` is the firm's monitored inbox. This broke once in production
-  silently — if you touch `template_params`, keep `to_email` in it.
 - `app/components/contact-form.tsx` is a 3-step wizard (topic → enquiry →
   details) but posts as **one native form**: every step's `<fieldset>` stays
   mounted and toggles via the `hidden` attribute, never conditional render —

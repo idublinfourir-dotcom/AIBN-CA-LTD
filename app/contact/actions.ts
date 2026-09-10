@@ -4,6 +4,9 @@ import { after } from "next/server";
 import { query } from "../lib/db";
 import { createClient } from "../lib/supabase/server";
 import { allowPublicAction } from "../lib/rate-limit";
+import { site } from "../lib/content";
+import { sendMail } from "../lib/mailer";
+import { ackHtml, ackSubject, ackText } from "../lib/enquiry-email";
 
 export interface EnquiryState {
   status: "idle" | "success" | "error";
@@ -15,68 +18,25 @@ export interface EnquiryState {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Send the enquiry as an email via the EmailJS REST API (server-side, so the
- * private key never reaches the browser). Best-effort: the DB row is the source
- * of truth, so a failed email is logged but doesn't fail the submission.
+ * Acknowledge the enquiry to the person who sent it.
+ *
+ * Goes to the customer, not to the firm: new enquiries surface in
+ * /admin/enquiries with an unread badge, so no alert email is needed. Reply-To
+ * is left at the default (the firm's own address), so answering the
+ * acknowledgement reaches a human here.
+ *
+ * Best-effort: the DB row is the source of truth, so a failed email is logged
+ * but doesn't fail the submission.
  */
-async function sendEnquiryEmail(values: {
-  name: string;
-  email: string;
-  company: string;
-  service: string;
-  message: string;
-}) {
-  const serviceId = process.env.EmailJs_Gmail_serviceid_KEY;
-  const templateId = process.env.EmailJs_Template_KEY;
-  const publicKey = process.env.EmailJs_PUBLIC_KEY;
-  const privateKey = process.env.EmailJs_Private_KEY;
-
-  if (!serviceId || !templateId || !publicKey || !privateKey) {
-    console.warn(
-      "[enquiry] EmailJS not fully configured (need EmailJs_Template_KEY); skipping email",
-    );
-    return;
-  }
-
-  try {
-    const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: serviceId,
-        template_id: templateId,
-        user_id: publicKey,
-        accessToken: privateKey,
-        // Superset of params so any template variant renders. The form
-        // collects name/email/company/service/message; service is also exposed
-        // as {{budget}} and {{title}} for templates that use those names.
-        template_params: {
-          // The EmailJS template's "To email" is {{to_email}}: it MUST be sent
-          // or the API rejects with 422 "recipients address is corrupted".
-          // This is the firm's monitored inbox; reply_to is the enquirer.
-          to_email: "idublinfourir@gmail.com",
-          to_name: "AIBN Chartered Accountants Ltd",
-          name: values.name,
-          email: values.email,
-          reply_to: values.email,
-          company: values.company || "Not provided",
-          service: values.service || "Not specified",
-          budget: values.service || "Not specified",
-          title: values.service || "your enquiry",
-          message: values.message,
-        },
-      }),
-    });
-    if (!res.ok) {
-      console.error(
-        "[enquiry] EmailJS send failed:",
-        res.status,
-        await res.text(),
-      );
-    }
-  } catch (err) {
-    console.error("[enquiry] EmailJS request error:", err);
-  }
+async function sendEnquiryAck(values: { name: string; email: string }) {
+  const sent = await sendMail({
+    to: values.email,
+    subject: ackSubject(),
+    html: ackHtml({ name: values.name, firmName: site.name }),
+    text: ackText({ name: values.name, firmName: site.name }),
+    logPrefix: "[enquiry]",
+  });
+  if (sent) console.info("[enquiry] acknowledgement emailed");
 }
 
 export async function submitEnquiry(
@@ -150,9 +110,9 @@ export async function submitEnquiry(
     return { status: "error", values };
   }
 
-  // Send the notification email AFTER the response is returned, so the form
-  // submission isn't blocked by the EmailJS round-trip (best-effort).
-  after(() => sendEnquiryEmail(values));
+  // Send the acknowledgement AFTER the response is returned, so the form
+  // submission isn't blocked by the SMTP round-trip (best-effort).
+  after(() => sendEnquiryAck(values));
 
   return { status: "success" };
 }

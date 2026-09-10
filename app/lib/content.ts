@@ -4,9 +4,9 @@ export const site = {
   // so this must carry the www prefix or every canonical URL and sitemap entry
   // points at a redirect. Drives metadataBase, sitemap.xml and robots.txt.
   url: "https://www.aibncharteredaccountants.ie",
-  // NOTE: this mailbox needs email forwarding (or a mail plan) configured at the
-  // registrar before launch, or enquiries to it bounce.
-  email: "hello@aibncharteredaccountants.ie",
+  // Live Zoho mailbox (the domain's MX points at Zoho). Also the address the
+  // site sends admin replies FROM: see SMTP_USER / MAIL_FROM in the env.
+  email: "info@aibncharteredaccountants.ie",
   phone: "+353 (0)1 234 5678",
   phoneHref: "tel:+35312345678",
   address: ["The Chase, Carmanhall Road", "Sandyford, Dublin 18, D18 Y3X2"],
