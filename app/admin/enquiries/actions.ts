@@ -92,6 +92,10 @@ export async function sendAdminMessageAction(formData: FormData): Promise<void> 
   const body = String(formData.get("body") ?? "").trim();
   if (!/^\d+$/.test(id) || validateEnquiryReply(body)) return;
 
+  // An unchecked checkbox isn't submitted at all, so absence means "don't
+  // email". Read before the insert so the intent is captured with the reply.
+  const emailCopy = formData.get("email_copy") !== null;
+
   try {
     await query(
       `insert into enquiry_messages (enquiry_id, sender, sender_user_id, body)
@@ -107,8 +111,9 @@ export async function sendAdminMessageAction(formData: FormData): Promise<void> 
   }
 
   // Email the client AFTER the response is sent, so the admin's send button
-  // isn't waiting on the SMTP round-trip.
-  after(() => notifyClientByEmail(id, body));
+  // isn't waiting on the SMTP round-trip. Skipped entirely when the admin
+  // unticked the copy: the reply is then portal-only.
+  if (emailCopy) after(() => notifyClientByEmail(id, body));
 
   revalidatePath("/admin/enquiries");
   revalidatePath("/admin");

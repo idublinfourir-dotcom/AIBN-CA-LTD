@@ -83,6 +83,31 @@ function Bubble({
   );
 }
 
+/** Opt-out for the outbound copy, rendered in the composer footer.
+
+   Checked by default: emailing the client is the common case, and a reply they
+   never see is the worse failure. Unchecking it posts to the thread only, which
+   is how you leave a note that shouldn't leave the portal.
+
+   An unchecked checkbox is simply absent from FormData, which is exactly how
+   the server action reads it. Lives here rather than in the admin page because
+   it needs useFormStatus, which only works inside the form. */
+export function EmailCopyToggle({ name = "email_copy" }: { name?: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <label className="inline-flex cursor-pointer select-none items-center gap-2 text-xs font-medium text-ink-body">
+      <input
+        type="checkbox"
+        name={name}
+        defaultChecked
+        disabled={pending}
+        className="h-4 w-4 shrink-0 cursor-pointer rounded-none border-line text-primary-500 accent-primary-500 disabled:cursor-not-allowed disabled:opacity-60"
+      />
+      Also email the client
+    </label>
+  );
+}
+
 function ComposerInner({
   placeholder,
   submitLabel,

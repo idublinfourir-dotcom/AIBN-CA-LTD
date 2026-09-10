@@ -219,6 +219,15 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   every message ships a plain-text alternative (its absence is a spam signal).
 - **Admin replies**: `app/admin/enquiries/actions.ts` posts the reply into the
   thread, then emails the client under `after()` so the send never blocks the UI.
+  The composer carries an "Also email the client" checkbox (`EmailCopyToggle` in
+  `chat-panel.tsx`, ticked by default). Unticked, the reply is portal-only and no
+  send is attempted. It reads as `formData.get("email_copy") !== null`, because
+  an unchecked checkbox is absent from FormData rather than false. The toggle
+  lives in the chat-panel module, not the admin page, because it needs
+  `useFormStatus` and that only works inside the form.
+- There is deliberately **no "Reply by email" mailto button**. It was removed
+  when the composer started emailing: two routes to the same action meant replies
+  sent from a mail client never appeared in the thread.
   Recipient is `coalesce(profiles.email, enquiries.email)`, so an enquiry owned
   by an account goes to the address that account logs in with, and a guest
   enquiry falls back to the address typed on the form.
