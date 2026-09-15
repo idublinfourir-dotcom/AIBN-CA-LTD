@@ -78,6 +78,23 @@ export async function signup(
     };
   }
 
+  /* An address that is already registered does NOT come back as an error.
+     Supabase deliberately returns a success with an obfuscated user and an
+     EMPTY identities array, and sends no email, so that signup cannot be used
+     to enumerate accounts. Without this check the screen says "check your
+     email" for a message that was never sent, which is indistinguishable from
+     a broken mailer and sent one real debugging session chasing SMTP.
+
+     Saying "this address is taken" does give up the same information the
+     obfuscation protects, which is a deliberate trade: the sign-in form
+     already reveals it, and a confirmation screen that lies is worse. */
+  if (created.user && created.user.identities?.length === 0) {
+    return {
+      error: "An account with this email already exists. Try signing in.",
+      values,
+    };
+  }
+
   // Email confirmation is a security boundary: guest enquiries may only be
   // claimed after this address has been proved. Fail closed if the Supabase
   // project is accidentally configured to issue a session immediately.
