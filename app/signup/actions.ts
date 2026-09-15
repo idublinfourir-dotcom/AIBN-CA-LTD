@@ -67,13 +67,41 @@ export async function signup(
   });
 
   if (createError) {
-    const exists = /already|exists|registered|duplicate/i.test(
-      createError.message,
-    );
+    /* Never render a provider error verbatim. Its wording is not written for
+       the person in front of us, it can leak internals, and when the API
+       answers with a body this client cannot parse the message ends up being
+       the literal string "{}" on the signup screen. Seen in production.
+
+       The full error is logged instead, so the cause is still recoverable from
+       the server output. */
+    console.error("[signup] Supabase refused the signup:", {
+      message: createError.message,
+      status: createError.status,
+      code: createError.code,
+    });
+
+    const text = String(createError.message ?? "");
+    if (/already|exists|registered|duplicate/i.test(text)) {
+      return {
+        error: "An account with this email already exists. Try signing in.",
+        values,
+      };
+    }
+
+    /* The confirmation mail could not be sent, so no account was created:
+       GoTrue rolls the user back. Almost always the project's SMTP settings,
+       which is an operator problem rather than anything this person can fix,
+       so say so plainly instead of blaming their details. */
+    if (/confirmation email|sending.*email/i.test(text) || createError.status === 500) {
+      return {
+        error:
+          "We couldn't send the confirmation email, so your account wasn't created. This is our end, not yours. Please try again shortly, or contact us and we'll set it up.",
+        values,
+      };
+    }
+
     return {
-      error: exists
-        ? "An account with this email already exists. Try signing in."
-        : createError.message,
+      error: "Account creation is temporarily unavailable. Please try again.",
       values,
     };
   }
