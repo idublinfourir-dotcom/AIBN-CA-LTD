@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { allowPublicAction } from "../lib/rate-limit";
+import { resolveEmailOrigin } from "../lib/site-origin";
+import { site } from "../lib/content";
 
 export interface SignupState {
   error?: string;
@@ -42,8 +44,18 @@ export async function signup(
     };
   }
 
+  /* Where the confirmation link comes back to. In production this is the
+     committed canonical host, never the request's Origin header: see
+     resolveEmailOrigin. Whatever it resolves to must also be listed in
+     Supabase's redirect allow-list, or Supabase silently substitutes the
+     project's Site URL. */
   const headerStore = await headers();
-  const origin = headerStore.get("origin");
+  const origin = resolveEmailOrigin({
+    configured: process.env.SITE_URL,
+    canonical: site.url,
+    isProduction: process.env.NODE_ENV === "production",
+    originHeader: headerStore.get("origin"),
+  });
   const supabase = await createClient();
   const { data: created, error: createError } = await supabase.auth.signUp({
     email,
