@@ -196,6 +196,33 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
     2026-07) — do not invent a new storage shape.
 
+### Signup confirmation (sent by this app, not by Supabase)
+
+- **Supabase does not mail the confirmation link.** `app/signup/actions.ts`
+  calls `auth.admin.generateLink({ type: "signup" })`, which creates the
+  account unconfirmed and returns the token hash **without sending anything**,
+  then mails it over the firm's own SMTP with the template in
+  `app/lib/signup-email.ts`. Do not revert this to `auth.signUp()`.
+- Why: `signUp()` puts the message in a dashboard template and makes delivery
+  depend on the project's custom SMTP panel. A bad setting there answers
+  `500 unexpected_failure / "Error sending confirmation email"` and GoTrue
+  rolls the user back, so signup breaks completely and the cause is invisible
+  outside the dashboard logs. That happened in production on 15 Sep 2026. The
+  mailbox that sends enquiry and reply mail was working throughout.
+- The URL is built here as `/auth/confirm?token_hash=…&type=email`, **not**
+  from `properties.action_link`. The action_link routes through Supabase's own
+  `/verify` endpoint and returns a PKCE `code`, which `/auth/confirm` does not
+  read and which cannot be exchanged on a different device from the one that
+  signed up. `type=email` is what that route hands to `verifyOtp`.
+- This send is the one mail failure in the codebase that is **not**
+  best-effort: the link is the second half of the transaction, so a refused
+  send deletes the account and says so, rather than leaving one that can never
+  be confirmed.
+- Consequences worth knowing: the Supabase **email template and custom SMTP
+  panel no longer affect signup at all**, and an already-registered address now
+  surfaces as a `generateLink` error instead of `signUp`'s obfuscated
+  empty-identities success.
+
 ### Outbound email (SMTP)
 
 - **EmailJS is gone.** Both emails the site sends now go over plain SMTP through
