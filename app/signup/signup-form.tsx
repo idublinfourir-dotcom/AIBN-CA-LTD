@@ -36,6 +36,13 @@ export function SignupForm() {
           <span className="font-medium text-ink">{state.values?.email}</span>.
           Click it to activate your account and open the client portal.
         </p>
+        {/* Said plainly because it is the most common outcome, not an edge
+            case: a first message from a new sender, carrying a link, is
+            exactly what a spam filter holds back. */}
+        <p className="text-sm leading-6 text-muted">
+          Can&apos;t find it? Check your spam or junk folder, and mark it as
+          not spam so future messages reach your inbox.
+        </p>
         <Link
           href="/login"
           className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
