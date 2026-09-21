@@ -49,9 +49,10 @@ async function consume(
 
 /**
  * Apply both per-IP and per-identity limits. Identifiers are hashed before
- * storage. Database errors fail open to avoid turning a transient metadata
- * failure into a site-wide outage; the protected action still performs its
- * normal validation and database/auth checks.
+ * storage. Errors reading or writing the counters fail open, to avoid turning a
+ * transient metadata failure into a site-wide outage; the protected action still
+ * performs its normal validation and database/auth checks. Table housekeeping
+ * sits outside that path on purpose, so it can never lift a limit.
  */
 export async function allowPublicAction({
   action,
@@ -59,6 +60,7 @@ export async function allowPublicAction({
   ip,
   identityLimit,
 }: PublicActionLimits): Promise<boolean> {
+  let allowed: boolean;
   try {
     const clientIp = await requestIp();
     const ipAllowed = await consume(
@@ -73,16 +75,25 @@ export async function allowPublicAction({
       identityLimit.max,
       identityLimit.windowSeconds,
     );
-
-    // Keep the fixed-window table bounded without requiring a scheduler.
-    await query(
-      `delete from request_rate_limits
-        where window_start < now() - interval '8 days'`,
-    );
-
-    return ipAllowed && identityAllowed;
+    allowed = ipAllowed && identityAllowed;
   } catch (err) {
     console.error(`[rate-limit:${action}] check failed open:`, err);
     return true;
   }
+
+  /* Keep the fixed-window table bounded without requiring a scheduler. This
+     runs AFTER the decision and swallows its own errors deliberately: while it
+     shared the try above, a failed housekeeping delete reached the fail-open
+     catch and turned an already-computed deny into an allow. Housekeeping must
+     never be able to lift a limit. */
+  try {
+    await query(
+      `delete from request_rate_limits
+        where window_start < now() - interval '8 days'`,
+    );
+  } catch (err) {
+    console.error(`[rate-limit:${action}] window cleanup failed (ignored):`, err);
+  }
+
+  return allowed;
 }
