@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
 import { query } from "../lib/db";
+import { loginErrorMessage } from "../lib/login-errors";
 
 export interface AuthState {
   error?: string;
@@ -33,7 +34,15 @@ export async function login(
   });
 
   if (error) {
-    return { error: error.message, values: { email } };
+    /* Log the provider's own words; show the person ours. See
+       app/lib/login-errors.ts for why this is keyed on `code`, and why an
+       unconfirmed account keeps a message of its own. */
+    console.error("[login] sign-in refused:", {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+    });
+    return { error: loginErrorMessage(error.code), values: { email } };
   }
 
   // Honor an explicit, safe redirect (set when the user was gated). Otherwise
