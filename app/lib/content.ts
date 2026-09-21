@@ -7,9 +7,13 @@ export const site = {
   // Live Zoho mailbox (the domain's MX points at Zoho). Also the address the
   // site sends admin replies FROM: see SMTP_USER / MAIL_FROM in the env.
   email: "info@aibncharteredaccountants.ie",
-  phone: "+353 (0)1 234 5678",
-  phoneHref: "tel:+35312345678",
-  address: ["The Chase, Carmanhall Road", "Sandyford, Dublin 18, D18 Y3X2"],
+  phone: "+353 89 951 9986",
+  // Digits only, no spaces or parentheses: some dialers refuse the rest.
+  phoneHref: "tel:+353899519986",
+  // Two lines, and the shape matters: the contact page reads address[0] and
+  // address[1] by index, and the header's contact strip shows address[1] alone
+  // as the locality. Keep it to two lines unless you update both.
+  address: ["River Walk", "Citywest Business Campus"],
   hours: "Mon–Fri, 9:00–17:30",
 };
 
