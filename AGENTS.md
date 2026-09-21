@@ -109,12 +109,28 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   or Google OAuth); intentionally **no profile UPDATE policy**, so a
   client can't self-promote. Change admin by editing that email in the trigger
   (via migration/MCP).
-- **Signup requires verified email ownership.** `app/signup/actions.ts` uses
-  normal Supabase `signUp`, returns the form's "Check your email" state, and
-  fails closed (signs out + removes the new user) if the dashboard's "Confirm
-  email" setting is accidentally disabled. `/auth/confirm` verifies the OTP,
-  establishes the session and claims matching guest enquiries. Never restore
-  Admin API `email_confirm: true` signup.
+- **Signup requires verified email ownership.** `app/signup/actions.ts` creates
+  the account with `auth.admin.generateLink({ type: "signup" })` and mails the
+  confirmation link itself over the firm's SMTP, then returns the form's "Check
+  your email" state. It fails closed (deletes the new user) both when the
+  account comes back already confirmed, which means the dashboard's "Confirm
+  email" setting is off, and when the send is refused. `/auth/confirm` verifies
+  the OTP, establishes the session and claims matching guest enquiries. Never
+  restore Admin API `email_confirm: true` signup, and never revert this to
+  `auth.signUp()`: the full reasoning is under "Signup confirmation (sent by
+  this app, not by Supabase)" below.
+- **Never render a provider error verbatim on a form.** Log `message`/`status`/
+  `code`, show copy of our own. Supabase's wording is not written for the person
+  at the keyboard, it can leak internals, and an unparseable body reaches the
+  screen as the literal string `{}` (seen in production on signup). Map on
+  `code`, which is a documented part of the API, never on message text. Login
+  uses `app/lib/login-errors.ts` (pure, unit-tested); signup does it inline.
+  Two rules when adding a case: wrong password, unknown address and malformed
+  address all return `invalid_credentials`, so they must keep ONE shared message
+  or the form becomes an enumeration oracle Supabase had closed; and
+  `email_not_confirmed` must keep its own actionable message, or anyone who
+  signed up without clicking the link is stranded with correct details and no
+  way to find out why.
 - **Google OAuth** via `signInWithOAuth` → `/auth/callback` exchanges PKCE
   code. OAuth users get `client` profile from same trigger. Provider
   enabled in Supabase dashboard (not via code/MCP). `redirectTo` =
@@ -145,12 +161,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   own shells (sidebar + topbar); `ChromeGate` hides public header/footer there.
 - **Two data paths by design:** `lib/db.ts` (`pg`) for contact write, admin
   enquiries read, all role lookups; `supabase-js` for auth/session.
-- **RLS deny-all is intentional on 11 tables** — `enquiries`,
+- **RLS deny-all is intentional on 12 tables** — `enquiries`,
   `enquiry_messages`, `rate_audit`, `calculator_settings`, `cgt_settings`,
   `cgt_multipliers`, `mortgage_settings`, `mortgage_products`, `tax_rates`,
-  `request_rate_limits`, `toolkit_resources` all keep **RLS enabled with no policy**: the
-  public Supabase API (anon/`authenticated`) is denied; the server reaches them
-  via the `pg` owner connection, which **bypasses RLS**. The security advisor's
+  `request_rate_limits`, `toolkit_resources`, `toolkit_requests` all keep
+  **RLS enabled with no policy**: the public Supabase API (anon/`authenticated`)
+  is denied; the server reaches them via the `pg` owner connection, which
+  **bypasses RLS**. The security advisor's
   `rls_enabled_no_policy` INFO on these is **expected, not a bug** — leave it.
   **Never add a permissive policy** (e.g. `using (true)`) to silence it: on
   `enquiries` that leaks customer PII, on the rate/settings tables it lets the
@@ -223,9 +240,62 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   surfaces as a `generateLink` error instead of `signUp`'s obfuscated
   empty-identities success.
 
+### Forgot password (a typed code, not a clicked link)
+
+- `/forgot-password` is the whole flow, in two server actions in
+  `app/forgot-password/actions.ts`. Step 1 `requestResetCode` calls
+  `auth.admin.generateLink({ type: "recovery" })`, which mints the token and
+  returns `email_otp` **without Supabase sending anything**, then mails it over
+  the firm's SMTP with `app/lib/reset-email.ts`. Step 2
+  `resetPasswordWithCode` calls `verifyOtp({ email, token, type: "recovery" })`
+  on the **SSR** client (so the session cookie gets written), then
+  `updateUser({ password })`. Same MINT-here-MAIL-ourselves split as signup.
+- **The code's length is not fixed and must never be hardcoded.** Supabase's
+  Email OTP Length is a dashboard setting this repo cannot read. Measured
+  against the live project on 2026-09-21 it returns **eight** digits, not the
+  six that most documentation shows. `CODE_SHAPE` accepts `\d{6,10}` and lets
+  Supabase judge correctness; no UI copy, email copy or test states a digit
+  count, and `reset-email.test.ts` pins that. A hardcoded 6 was written first
+  and only caught by probing the real project: do not reintroduce one.
+- **No link in the mail, on purpose.** A typed code works on a different device
+  from the one that asked, which the signup `action_link` cannot do, and it
+  keeps `/auth/confirm` narrowed to `type=email` so this feature widens no
+  existing verification route. `ALLOWED_OTP_TYPES` there stays `["email"]`.
+- **Step 1 answers identically for every address**, registered or not.
+  `generateLink` returns `404 User with this email not found` for an unknown
+  one; that is swallowed and the same "a code is on its way" screen renders. A
+  reset form that answers differently is an account-enumeration oracle, and
+  here the fact leaked would be "this person banks with these accountants".
+  Note the protection is partial while signup still reports "An account with
+  this email already exists": that is a reason to fix signup, not to leak twice.
+- **The send is best-effort here, unlike signup.** There is no half-made account
+  to roll back, and "we couldn't send it" would itself confirm the address
+  exists. A refused send is logged loudly and the same screen renders.
+- Step 2 is the **brute-force boundary**: throttled per email and per IP under
+  its own `password-reset-verify` key, separate from step 1's
+  `password-reset-request`. The password is validated (shared
+  `validatePassword`) **before** `verifyOtp` runs, because the code is
+  single-use and a weak-password rejection afterwards would strand the user.
+  Wrong, expired and already-used codes all return one message.
+- A successful reset calls `signOut({ scope: "others" })`: a reset exists
+  because the old password may be in someone else's hands, so every other
+  session for that account goes. Best-effort, logged on failure.
+- **Reset does not claim guest enquiries.** It does prove email ownership, but
+  that boundary stays where `claimVerifiedGuestEnquiries` puts it (signup
+  confirm and the OAuth callback). Do not widen an ownership boundary as a side
+  effect of a password feature.
+- Not gated for Google-only accounts: someone who signed up with Google can set
+  a password and end up with two sign-in methods. Deliberate, and cheap to gate
+  in step 1 if that is not wanted.
+- Verified 2026-09-21 against the live project with a throwaway account (since
+  deleted): code verifies, is single-use, replaces the password, the old
+  password stops working, a wrong code is refused, and an unknown address 404s.
+  `smtp.zoho.com:465` accepted credentials on the same date via a connect-only
+  check.
+
 ### Outbound email (SMTP)
 
-- **EmailJS is gone.** Both emails the site sends now go over plain SMTP through
+- **EmailJS is gone.** All four emails the site sends go over plain SMTP through
   `app/lib/mailer.ts` (nodemailer). `sendMail` is best-effort: it returns `false`
   and logs on a missing config or a refused send, and never throws, so a mail
   problem can never take down the database write that preceded it. It is
@@ -238,12 +308,21 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   app password. **`smtppro.zoho.com` returns `554 5.7.8 Access Restricted` for
   this account** on 465 and 587 despite being what Zoho's docs recommend for
   custom domains: do not "fix" the host to smtppro.
-- Both email bodies are composed in this repo, so their layout is reviewable and
-  changes in a commit: `app/lib/reply-email.ts` (admin reply to a client) and
-  `app/lib/enquiry-email.ts` (new-enquiry notification to the firm). Email
-  clients are hostile: tables for structure, inline styles only, no `<style>`
-  blocks, 600px width. Every interpolated value goes through `escapeHtml`, and
-  every message ships a plain-text alternative (its absence is a spam signal).
+- Every email body is composed in this repo, so its layout is reviewable and
+  changes in a commit: `app/lib/reply-email.ts` (admin reply to a client),
+  `app/lib/enquiry-email.ts` (acknowledgement to the enquirer),
+  `app/lib/signup-email.ts` (confirmation link) and `app/lib/reset-email.ts`
+  (password reset code). Email clients are hostile: tables for structure, inline
+  styles only, no `<style>` blocks, 600px width. Every interpolated value goes
+  through `escapeHtml`, and every message ships a plain-text alternative (its
+  absence is a spam signal).
+- **The shell is now copied four times** and `signup-email.ts` asks for it to be
+  extracted into an `email-layout.ts` once a fourth appeared. That is due. It was
+  left out of the forgot-password change so a new auth flow and a refactor of
+  three already-proven templates did not land in one diff.
+- Only two of the four are unit-tested (`signup-email.test.ts`,
+  `reset-email.test.ts`). Extract the shell before adding a fifth, and cover the
+  other two while doing it.
 - **Admin replies**: `app/admin/enquiries/actions.ts` posts the reply into the
   thread, then emails the client under `after()` so the send never blocks the UI.
   The composer carries an "Also email the client" checkbox (`EmailCopyToggle` in
@@ -262,24 +341,32 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   else**: no quoted enquiry, no portal link, no timestamp. That is a product
   decision, not an oversight (asked and confirmed 2026-09-10). Do not "helpfully"
   append context to it.
-- **Enquiry notifications**: `app/contact/actions.ts` saves the row, then mails
-  `site.enquiryInbox` (in `app/lib/content.ts`) under `after()`, with the
-  enquirer as `replyTo` so hitting reply answers the customer. Note that
-  `site.email` (published on the site) and `site.enquiryInbox` (where alerts
-  land) are deliberately different values.
+- **Enquiry acknowledgements**: `app/contact/actions.ts` saves the row, then
+  mails **the enquirer** under `after()` (`app/lib/enquiry-email.ts`,
+  `ackHtml`/`ackText`). There is deliberately **no alert email to the firm**:
+  new enquiries surface in `/admin/enquiries` with an unread badge, so a
+  notification would be a second channel for something already visible. Do not
+  add one, and do not reach for a `site.enquiryInbox` field: it does not exist.
+  `replyTo` is left at the default (the firm's own address), so answering the
+  acknowledgement reaches a human here. Best-effort: the DB row is the source of
+  truth, so a refused send is logged and the submission still succeeds.
 - Historical trap, now fixed: the old EmailJS template's "To email" field read
-  `{{email}}`, which `app/contact/actions.ts` filled with the ENQUIRER's address,
-  so notifications were addressed to the person submitting the form rather than
-  to the firm. Nothing surfaced it because the send returned 200 and the failure
-  path only logged. Moving to SMTP removed the class of bug: the recipient is now
-  an argument in code, not a dashboard field.
+  `{{email}}`, so the recipient was a dashboard field rather than an argument in
+  code, and nothing surfaced a wrong one because the send returned 200 and the
+  failure path only logged. Moving to SMTP removed the class of bug: who each
+  message goes to is now visible in the source and reviewable in a commit.
 - The reply email is a copy, not a channel: nothing parses inbound mail, so a
   client replying from their mail app reaches the mailbox but not the thread.
   Two-way would need an inbound provider writing a `sender = 'client'` row.
-- Public signup and contact submissions use DB-backed fixed-window throttling
-  from `app/lib/rate-limit.ts` (per IP + per normalised email). Only SHA-256
-  identifiers are stored in `request_rate_limits`; never store raw IP/email
-  throttle keys or replace this with per-process memory on serverless.
+- **Every public write path** goes through the DB-backed fixed-window throttle
+  in `app/lib/rate-limit.ts` (per IP **and** per normalised email): signup,
+  contact, and the Founders Hub request form. Only SHA-256 identifiers are
+  stored in `request_rate_limits`; never store raw IP/email throttle keys or
+  replace this with per-process memory on serverless. Add a new public form and
+  it gets `allowPublicAction` too: a per-email row count is not enough on its
+  own, because varying the address defeats it. The table's own housekeeping
+  delete runs outside the decision, so a failed cleanup can never lift a
+  limit.
 - `app/components/contact-form.tsx` is a 3-step wizard (topic → enquiry →
   details) but posts as **one native form**: every step's `<fieldset>` stays
   mounted and toggles via the `hidden` attribute, never conditional render —

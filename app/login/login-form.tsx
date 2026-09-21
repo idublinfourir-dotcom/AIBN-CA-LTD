@@ -9,6 +9,9 @@ import { GoogleButton } from "../components/google-button";
 const inputClasses =
   "w-full rounded-none border border-line bg-canvas px-4 py-3 text-[15px] text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-500";
 
+const linkClasses =
+  "font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600";
+
 const initialState: AuthState = {};
 
 export function LoginForm({
@@ -86,15 +89,22 @@ export function LoginForm({
           {isPending ? "Signing in…" : "Sign in"}
         </button>
 
-        <p className="text-sm text-muted">
-          New client?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
-          >
-            Create an account
-          </Link>
-        </p>
+        {/* Every secondary route out of this form lives here, under the
+            primary action, rather than beside a field label where it competes
+            with the label for attention. */}
+        <div className="flex flex-col gap-1.5 text-sm text-muted">
+          <p>
+            New client?{" "}
+            <Link href="/signup" className={linkClasses}>
+              Create an account
+            </Link>
+          </p>
+          <p>
+            <Link href="/forgot-password" className={linkClasses}>
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );
