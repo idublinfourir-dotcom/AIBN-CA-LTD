@@ -396,6 +396,9 @@ alter table public.cgt_multipliers enable row level security;
 alter table public.rate_audit enable row level security;
 alter table public.request_rate_limits enable row level security;
 alter table public.toolkit_resources enable row level security;
+-- toolkit_requests belongs in this list too, but it is created further down
+-- the file, so its `enable row level security` sits with its own DDL at the
+-- bottom. Keep the two in step: every application table is deny-all.
 
 comment on table public.enquiries is
   'Server-only customer enquiries. RLS deny-all is intentional; pg owner access bypasses RLS.';
@@ -502,3 +505,12 @@ create index if not exists toolkit_requests_email_idx
   on toolkit_requests (lower(email), created_at desc);
 create index if not exists toolkit_requests_status_idx
   on toolkit_requests (status, created_at desc);
+
+-- Same public API boundary as the block above, applied here because this table
+-- is defined after it. Requester name, phone, email, website and purpose are
+-- lead PII: without this, a schema-provisioned environment would expose the
+-- whole table to the anon PostgREST role.
+alter table public.toolkit_requests enable row level security;
+
+comment on table public.toolkit_requests is
+  'Server-only Founders Hub file requests (lead PII). RLS deny-all is intentional; pg owner access bypasses RLS.';
