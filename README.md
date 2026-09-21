@@ -53,7 +53,9 @@ automatically, and there is no email provider wired into the app.
 
 Outstanding requests sort to the top and the heading shows a "to send" count.
 Mark sent shows a spinner and then a confirmation, so the click is never
-silent. Abuse is bounded by a five-per-hour limit per email address.
+silent. Abuse is bounded by the shared throttle in `app/lib/rate-limit.ts`:
+five an hour per email address, and fifteen an hour per IP so the cap cannot be
+sidestepped by varying the address.
 
 **There is no upload path, deliberately.** The site never hosts a Founders Hub
 file: no upload form, no storage bucket, no public download link. The catalogue

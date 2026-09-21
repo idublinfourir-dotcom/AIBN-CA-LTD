@@ -48,19 +48,10 @@ const fromRow = (r: RequestRow): ToolkitRequest => ({
   createdAt: r.created_at,
 });
 
-/** How many requests one address may submit per hour. */
-export const REQUEST_RATE_LIMIT = 5;
-
-export async function countRecentRequests(email: string): Promise<number> {
-  const { rows } = await query<{ n: number }>(
-    `select count(*)::int as n
-       from toolkit_requests
-      where lower(email) = lower($1)
-        and created_at > now() - interval '1 hour'`,
-    [email],
-  );
-  return rows[0]?.n ?? 0;
-}
+/* The per-address hourly cap used to live here as a row count over
+   toolkit_requests. It moved to the shared allowPublicAction throttle in
+   app/toolkits/actions.ts, which also covers the per-IP case this could not:
+   varying the email defeated a count keyed on the email alone. */
 
 export async function createRequest(input: {
   resourceTitle: string;

@@ -6,16 +6,14 @@
    Nothing is emailed automatically: a team member reads the request in
    /admin/toolkits and sends the file by hand, then marks it sent.
 
-   Deliberately public (no auth). Abuse is bounded by a per-address hourly
-   limit, and the request only ever records what was typed in. */
+   Deliberately public (no auth). Abuse is bounded by the shared per-IP and
+   per-address throttle in lib/rate-limit.ts, and the request only ever records
+   what was typed in. */
 
 import { revalidatePath } from "next/cache";
 import { findRequestableResourceBySlug } from "../lib/toolkit-content";
-import {
-  countRecentRequests,
-  createRequest,
-  REQUEST_RATE_LIMIT,
-} from "../lib/toolkit-requests";
+import { createRequest } from "../lib/toolkit-requests";
+import { allowPublicAction } from "../lib/rate-limit";
 
 export interface RequestState {
   status: "idle" | "sent" | "error";
@@ -109,16 +107,24 @@ export async function submitResourceRequestAction(
     };
   }
 
-  try {
-    if ((await countRecentRequests(email)) >= REQUEST_RATE_LIMIT) {
-      return {
-        status: "error",
-        message: "That is a lot of requests in one go. Please try again later.",
-      };
-    }
-  } catch (err) {
-    // A failed rate-limit read should not block a genuine request.
-    console.error("[toolkits] rate-limit check failed:", err);
+  /* The same DB-backed throttle the contact and signup forms use. Per address
+     stays at five an hour, which is what the README documents. The per-IP limit
+     is the part a row count on `toolkit_requests` could never give us: an
+     attacker only had to vary the email to flood the table unbounded. It is set
+     well above the per-address limit so a shared office address is not spent by
+     one keen visitor. allowPublicAction fails open by itself, so there is
+     nothing to catch here. */
+  const allowed = await allowPublicAction({
+    action: "toolkit-request",
+    identity: email,
+    ip: { max: 15, windowSeconds: 60 * 60 },
+    identityLimit: { max: 5, windowSeconds: 60 * 60 },
+  });
+  if (!allowed) {
+    return {
+      status: "error",
+      message: "That is a lot of requests in one go. Please try again later.",
+    };
   }
 
   try {
