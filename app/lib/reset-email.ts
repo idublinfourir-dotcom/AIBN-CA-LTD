@@ -14,25 +14,21 @@
    signup action_link cannot do (it comes back as a PKCE code bound to the
    requesting browser). It also keeps /auth/confirm narrowed to type=email.
 
-   Same email-client constraints as the others: tables for structure, inline
-   styles only, no <style> blocks, 600px width. Pure, composes strings and
-   sends nothing.
+   The frame and its email-client constraints live in email-layout.ts. Pure,
+   composes strings and sends nothing. */
 
-   Fourth copy of this shell now (enquiry-email.ts, reply-email.ts,
-   signup-email.ts, here). signup-email.ts asks for the shell to be extracted
-   into email-layout.ts once a fourth appeared: that is now due, and is left as
-   its own change so this feature stays reviewable. */
-
-const INK = "#0b0b0c";
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+import {
+  emailDocument,
+  escapeHtml,
+  finePrint,
+  greeting,
+  greetingName,
+  INK,
+  paragraph,
+  RULE,
+  signOff,
+  WASH,
+} from "./email-layout.ts";
 
 export interface ResetEmailInput {
   /** The account's display name, for the greeting. May be empty. */
@@ -47,10 +43,6 @@ export interface ResetEmailInput {
 
 export function resetSubject(): string {
   return "Your password reset code";
-}
-
-function greetingName(name: string): string {
-  return name.trim().split(/\s+/)[0] || "there";
 }
 
 /* Stated in both parts so the two cannot drift. Mirrors the project's
@@ -84,47 +76,22 @@ export function resetText(input: ResetEmailInput): string {
 }
 
 export function resetHtml(input: ResetEmailInput): string {
-  const first = escapeHtml(greetingName(input.name));
-  const firm = escapeHtml(input.firmName);
   const code = escapeHtml(input.code);
 
-  return `<!doctype html>
-<html lang="en">
-<body style="margin:0;padding:0;background:#f4f5f3">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f3;padding:24px 12px">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#ffffff;border:1px solid #e3e5e0">
-
-          <tr>
-            <td style="background:${INK};padding:20px 28px">
-              <span style="color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:17px;letter-spacing:0.02em">${firm}</span>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif">
-              <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:${INK}">Hi ${first},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:${INK}">Here is the code to reset your password. Type it into the form you started on our site, along with your new password.</p>
-
-              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px">
-                <tr>
-                  <td style="background:#f4f5f3;border:1px solid #e3e5e0;padding:16px 24px">
-                    <span style="font-family:'Courier New',Courier,monospace;font-size:30px;font-weight:700;letter-spacing:0.18em;color:${INK}">${code}</span>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:${INK}">${EXPIRY_LINE} ${PHISHING_LINE}</p>
-              <p style="margin:0 0 16px;font-size:13px;line-height:20px;color:#6b6f6a">${IGNORE_LINE}</p>
-              <p style="margin:24px 0 0;font-size:15px;line-height:24px;color:${INK}">${firm}</p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  return emailDocument(input.firmName, [
+    greeting(input.name),
+    paragraph(
+      "Here is the code to reset your password. Type it into the form you started on our site, along with your new password.",
+    ),
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px">
+  <tr>
+    <td style="background:${WASH};border:1px solid ${RULE};padding:16px 24px">
+      <span style="font-family:'Courier New',Courier,monospace;font-size:30px;font-weight:700;letter-spacing:0.18em;color:${INK}">${code}</span>
+    </td>
+  </tr>
+</table>`,
+    paragraph(`${EXPIRY_LINE} ${PHISHING_LINE}`),
+    finePrint(IGNORE_LINE),
+    signOff(input.firmName),
+  ]);
 }
