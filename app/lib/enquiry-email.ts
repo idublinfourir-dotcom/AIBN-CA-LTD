@@ -1,22 +1,12 @@
 /* The acknowledgement sent to someone who submits the contact form: confirmation
    that their enquiry arrived and that a person will come back to them.
 
-   It goes to the CUSTOMER, not to the firm. New enquiries surface in
-   /admin/enquiries with an unread badge, which is how the firm sees them.
+   It goes to the CUSTOMER. The firm hears about the same enquiry separately,
+   through enquiryAlert in firm-alert-email.ts.
 
-   Same email-client constraints as reply-email.ts: tables for structure, inline
-   styles only, no <style> blocks, 600px width. */
+   The frame and its email-client constraints live in email-layout.ts. */
 
-const INK = "#0b0b0c";
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+import { emailDocument, greeting, greetingName, paragraph, signOff } from "./email-layout.ts";
 
 export interface EnquiryAckInput {
   /** The name they gave on the form, for the greeting. */
@@ -26,10 +16,6 @@ export interface EnquiryAckInput {
 
 export function ackSubject(): string {
   return "We've received your enquiry";
-}
-
-function greetingName(name: string): string {
-  return name.trim().split(/\s+/)[0] || "there";
 }
 
 /** The one line of substance, shared by both parts so they can't drift.
@@ -49,35 +35,9 @@ export function ackText(input: EnquiryAckInput): string {
 }
 
 export function ackHtml(input: EnquiryAckInput): string {
-  const first = escapeHtml(greetingName(input.name));
-  const firm = escapeHtml(input.firmName);
-
-  return `<!doctype html>
-<html lang="en">
-<body style="margin:0;padding:0;background:#f4f5f3">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f3;padding:24px 12px">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#ffffff;border:1px solid #e3e5e0">
-
-          <tr>
-            <td style="background:${INK};padding:20px 28px">
-              <span style="color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:17px;letter-spacing:0.02em">${firm}</span>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif">
-              <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:${INK}">Hi ${first},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:${INK}">${ACK_LINE}</p>
-              <p style="margin:24px 0 0;font-size:15px;line-height:24px;color:${INK}">${firm}</p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  return emailDocument(input.firmName, [
+    greeting(input.name),
+    paragraph(ACK_LINE),
+    signOff(input.firmName),
+  ]);
 }

@@ -3,17 +3,23 @@
 /* "Request a copy" on the Founders Hub.
 
    A visitor fills in the form and we record who they are and what they want.
-   Nothing is emailed automatically: a team member reads the request in
-   /admin/toolkits and sends the file by hand, then marks it sent.
+   The firm gets an alert email (toolkitRequestAlert); the document itself is
+   never emailed automatically: a team member sends the file by hand from their
+   own mailbox, then marks it sent in /admin/toolkits.
 
    Deliberately public (no auth). Abuse is bounded by the shared per-IP and
    per-address throttle in lib/rate-limit.ts, and the request only ever records
    what was typed in. */
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { findRequestableResourceBySlug } from "../lib/toolkit-content";
 import { createRequest } from "../lib/toolkit-requests";
 import { allowPublicAction } from "../lib/rate-limit";
+import { notifyFirm } from "../lib/mailer";
+import { toolkitRequestAlert } from "../lib/firm-alert-email";
+import { emailOrigin } from "../lib/email-origin";
+import { site } from "../lib/content";
 
 export interface RequestState {
   status: "idle" | "sent" | "error";
@@ -143,6 +149,24 @@ export async function submitResourceRequestAction(
       message: "Something went wrong saving your request. Please try again.",
     };
   }
+
+  // After the response, best-effort: the row is what /admin/toolkits lists.
+  const origin = await emailOrigin();
+  after(() =>
+    notifyFirm(
+      toolkitRequestAlert({
+        resourceTitle: resource.title,
+        name,
+        email,
+        phone,
+        website: normalisedWebsite,
+        purpose,
+        origin,
+        firmName: site.name,
+      }),
+      "[toolkits]",
+    ),
+  );
 
   revalidatePath("/admin/toolkits");
   return { status: "sent" };
