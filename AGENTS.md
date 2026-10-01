@@ -295,13 +295,14 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Outbound email (SMTP)
 
-- **EmailJS is gone.** All four emails the site sends go over plain SMTP through
+- **EmailJS is gone.** Every email the site sends goes over plain SMTP through
   `app/lib/mailer.ts` (nodemailer). `sendMail` is best-effort: it returns `false`
   and logs on a missing config or a refused send, and never throws, so a mail
   problem can never take down the database write that preceded it. It is
   server-only. The `EmailJs_*` env vars are dead and can be deleted.
 - Config is `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS`, plus optional
-  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`). With none set,
+  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`) and
+  `FIRM_NOTIFY_TO` (where firm alerts go; defaults to the Reply-To mailbox). With none set,
   sending is a logged no-op and the app still works. Verified end to end
   2026-09-10 against Zoho: **`smtp.zoho.com:465`**, sending as
   `info@aibncharteredaccountants.ie`, authenticating with a 12-character Zoho
@@ -311,18 +312,18 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - Every email body is composed in this repo, so its layout is reviewable and
   changes in a commit: `app/lib/reply-email.ts` (admin reply to a client),
   `app/lib/enquiry-email.ts` (acknowledgement to the enquirer),
-  `app/lib/signup-email.ts` (confirmation link) and `app/lib/reset-email.ts`
-  (password reset code). Email clients are hostile: tables for structure, inline
-  styles only, no `<style>` blocks, 600px width. Every interpolated value goes
-  through `escapeHtml`, and every message ships a plain-text alternative (its
-  absence is a spam signal).
-- **The shell is now copied four times** and `signup-email.ts` asks for it to be
-  extracted into an `email-layout.ts` once a fourth appeared. That is due. It was
-  left out of the forgot-password change so a new auth flow and a refactor of
-  three already-proven templates did not land in one diff.
-- Only two of the four are unit-tested (`signup-email.test.ts`,
-  `reset-email.test.ts`). Extract the shell before adding a fifth, and cover the
-  other two while doing it.
+  `app/lib/signup-email.ts` (confirmation link), `app/lib/reset-email.ts`
+  (password reset code) and `app/lib/firm-alert-email.ts` (alerts to the firm).
+  Email clients are hostile: tables for structure, inline styles only, no
+  `<style>` blocks, 600px width. Every interpolated value goes through
+  `escapeHtml`, and every message ships a plain-text alternative (its absence is
+  a spam signal).
+- **The frame lives once, in `app/lib/email-layout.ts`** (`emailDocument` plus
+  `paragraph`, `greeting`, `signOff`, `button`, `finePrint`, `textParagraphs`).
+  A template supplies only its own blocks; do not paste the shell back into one.
+  Extracted 2026-10-01 with the output of the four older templates checked
+  unchanged apart from blank lines between tags. Every template has a
+  `*.test.ts`; a new one gets one too.
 - **Admin replies**: `app/admin/enquiries/actions.ts` posts the reply into the
   thread, then emails the client under `after()` so the send never blocks the UI.
   The composer carries an "Also email the client" checkbox (`EmailCopyToggle` in
@@ -343,13 +344,32 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   append context to it.
 - **Enquiry acknowledgements**: `app/contact/actions.ts` saves the row, then
   mails **the enquirer** under `after()` (`app/lib/enquiry-email.ts`,
-  `ackHtml`/`ackText`). There is deliberately **no alert email to the firm**:
-  new enquiries surface in `/admin/enquiries` with an unread badge, so a
-  notification would be a second channel for something already visible. Do not
-  add one, and do not reach for a `site.enquiryInbox` field: it does not exist.
-  `replyTo` is left at the default (the firm's own address), so answering the
-  acknowledgement reaches a human here. Best-effort: the DB row is the source of
-  truth, so a refused send is logged and the submission still succeeds.
+  `ackHtml`/`ackText`). `replyTo` is left at the default (the firm's own
+  address), so answering the acknowledgement reaches a human here. Best-effort:
+  the DB row is the source of truth, so a refused send is logged and the
+  submission still succeeds.
+- **Firm alerts** (added 2026-10-01, reversing an earlier "no alert email"
+  rule): the firm reads its Zoho inbox, not the admin badge, so three events
+  email `notifyFirm` (`mailer.ts`, recipient `FIRM_NOTIFY_TO` or the Reply-To
+  mailbox) under `after()`: a new enquiry (`app/contact/actions.ts`), a client
+  message in the portal (`app/portal/actions.ts`) and a Founders Hub request
+  (`app/toolkits/actions.ts`). Templates in `app/lib/firm-alert-email.ts`; each
+  links into `/admin`. Before this, the firm was never emailed at Zoho: the
+  EmailJS-era notification went to a Gmail address and was dropped in the SMTP
+  move.
+  - **An alert is a pointer, not a channel.** Reply-To stays the firm's own
+    address and the alert says to answer from the admin portal, so the thread
+    stays the one record (the same reason the mailto button went). Do not set
+    the alert's Reply-To to the client. Asked and confirmed 2026-10-01.
+  - **One alert per unread stretch** for portal messages: the action reads
+    `ADMIN_UNREAD_SQL` before inserting and skips the alert when the thread was
+    already unread for the admin (the new-enquiry alert or an earlier message
+    covered it). This bounds an unthrottled, signed-in chat path so it cannot
+    spend the mailbox's sending limit, which signup confirmations share. The
+    alert says so, so a quiet inbox is never misread. Opening or replying in
+    `/admin/enquiries` resets it.
+  - Point `FIRM_NOTIFY_TO` at your own address when testing locally: dev and
+    prod share one database and one mailbox.
 - Historical trap, now fixed: the old EmailJS template's "To email" field read
   `{{email}}`, so the recipient was a dashboard field rather than an argument in
   code, and nothing surfaced a wrong one because the send returned 200 and the
@@ -385,8 +405,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   categories and the title→slug helper both the browser and the request route
   use.
 - Fulfilment is manual: visitor requests on `/toolkits/request/[slug]` →
-  row in `toolkit_requests` → a team member emails the file from their own
-  mailbox via `/admin/toolkits` → **Mark sent**
+  row in `toolkit_requests` plus an alert email to the firm →
+  a team member emails the file from their own mailbox → **Mark sent** in
+  `/admin/toolkits`
   (`app/admin/toolkits/request-status-button.tsx`, which shows a pending
   spinner and a confirmation so the click is never silent).
 - `toolkit_resources` and `toolkit_requests.resource_id` are **legacy**: kept

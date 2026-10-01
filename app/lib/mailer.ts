@@ -1,9 +1,10 @@
-/* SMTP transport for mail the firm sends OUT to clients. SERVER ONLY.
+/* SMTP transport for every email the site sends. SERVER ONLY. Mostly that is
+   mail OUT to clients; notifyFirm sends the firm its own alerts.
 
    Deliberately provider-agnostic: it speaks plain SMTP, so the same code sends
    through Zoho (where aibncharteredaccountants.ie mail lives), or Resend, or
    anything else, by changing env vars only. The layout of each email lives in
-   this repo (see reply-email.ts), not in a provider's dashboard.
+   this repo (see email-layout.ts), not in a provider's dashboard.
 
    Every send is best-effort. The caller has already committed its database row,
    so a refused send is logged and swallowed rather than thrown. */
@@ -17,6 +18,8 @@ export interface MailerConfig {
   pass: string;
   from: string;
   replyTo: string;
+  /** Where firm alerts go: see notifyFirm. */
+  notifyTo: string;
 }
 
 /** Read SMTP settings from the environment. Returns null (and says which key is
@@ -41,13 +44,18 @@ export function readMailerConfig(): MailerConfig | null {
 
   // MAIL_FROM defaults to the authenticated mailbox: most providers reject a
   // From that the account doesn't own, so this is the safe default.
+  const replyTo = process.env.MAIL_REPLY_TO || process.env.MAIL_FROM || user!;
   return {
     host: host!,
     port,
     user: user!,
     pass: pass!,
     from: process.env.MAIL_FROM || user!,
-    replyTo: process.env.MAIL_REPLY_TO || process.env.MAIL_FROM || user!,
+    replyTo,
+    // The mailbox a person here already reads, since replies to our mail land
+    // there. FIRM_NOTIFY_TO points alerts elsewhere, e.g. so a dev machine's
+    // test submissions stay out of the real inbox.
+    notifyTo: process.env.FIRM_NOTIFY_TO?.trim() || replyTo,
   };
 }
 
@@ -79,8 +87,7 @@ export async function sendMail(opts: {
   html: string;
   text: string;
   logPrefix: string;
-  /** Overrides MAIL_REPLY_TO. Used by the enquiry notification so the firm can
-      reply straight to the customer. */
+  /** Overrides MAIL_REPLY_TO for this one message. */
   replyTo?: string;
 }): Promise<boolean> {
   const config = readMailerConfig();
@@ -103,4 +110,25 @@ export async function sendMail(opts: {
     console.error(`${opts.logPrefix} SMTP send failed:`, err);
     return false;
   }
+}
+
+/**
+ * Tell the firm something needs a person: a new enquiry, a client message or a
+ * Founders Hub request (built by firm-alert-email.ts). Goes to `notifyTo`, with
+ * the default Reply-To, so pressing Reply reaches the firm rather than the
+ * client: replies belong in the admin portal, where the thread keeps them.
+ * Best-effort like every send here.
+ */
+export async function notifyFirm(
+  alert: { subject: string; text: string; html: string },
+  logPrefix: string,
+): Promise<boolean> {
+  const config = readMailerConfig();
+  if (!config) {
+    console.warn(`${logPrefix} no SMTP config; skipping firm alert`);
+    return false;
+  }
+  const sent = await sendMail({ ...alert, to: config.notifyTo, logPrefix });
+  if (sent) console.info(`${logPrefix} firm alert emailed`);
+  return sent;
 }

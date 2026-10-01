@@ -5,8 +5,10 @@ import { query } from "../lib/db";
 import { createClient } from "../lib/supabase/server";
 import { allowPublicAction } from "../lib/rate-limit";
 import { site } from "../lib/content";
-import { sendMail } from "../lib/mailer";
+import { notifyFirm, sendMail } from "../lib/mailer";
 import { ackHtml, ackSubject, ackText } from "../lib/enquiry-email";
+import { enquiryAlert } from "../lib/firm-alert-email";
+import { emailOrigin } from "../lib/email-origin";
 
 export interface EnquiryState {
   status: "idle" | "success" | "error";
@@ -20,9 +22,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /**
  * Acknowledge the enquiry to the person who sent it.
  *
- * Goes to the customer, not to the firm: new enquiries surface in
- * /admin/enquiries with an unread badge, so no alert email is needed. Reply-To
- * is left at the default (the firm's own address), so answering the
+ * Goes to the customer. The firm gets its own alert (enquiryAlert, below).
+ * Reply-To is left at the default (the firm's own address), so answering the
  * acknowledgement reaches a human here.
  *
  * Best-effort: the DB row is the source of truth, so a failed email is logged
@@ -92,10 +93,12 @@ export async function submitEnquiry(
 
   // Save to Postgres (Supabase). Parameterised query ($1..$6), never string
   // interpolation, so user input can't be used for SQL injection.
+  let enquiryId: string;
   try {
-    await query(
+    const { rows } = await query<{ id: string }>(
       `insert into enquiries (name, email, company, service, message, user_id)
-       values ($1, $2, $3, $4, $5, $6)`,
+       values ($1, $2, $3, $4, $5, $6)
+       returning id`,
       [
         values.name,
         values.email,
@@ -105,14 +108,32 @@ export async function submitEnquiry(
         userId,
       ],
     );
+    enquiryId = rows[0].id;
   } catch (err) {
     console.error("[enquiry] failed to save:", err);
     return { status: "error", values };
   }
 
-  // Send the acknowledgement AFTER the response is returned, so the form
-  // submission isn't blocked by the SMTP round-trip (best-effort).
+  // Both emails go AFTER the response is returned, so the form submission
+  // isn't blocked by the SMTP round-trips (best-effort). The alert carries the
+  // saved message (capped like the row), so the inbox matches /admin.
+  const origin = await emailOrigin();
   after(() => sendEnquiryAck(values));
+  after(() =>
+    notifyFirm(
+      enquiryAlert({
+        enquiryId,
+        name: values.name,
+        email: values.email,
+        company: values.company || null,
+        service: values.service || null,
+        message: values.message.slice(0, 4000),
+        origin,
+        firmName: site.name,
+      }),
+      "[enquiry]",
+    ),
+  );
 
   return { status: "success" };
 }

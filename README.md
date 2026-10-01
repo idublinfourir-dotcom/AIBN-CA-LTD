@@ -41,15 +41,17 @@ Things that are built but not finished, so they are not lost.
 
 ### 1. Founders Hub "Request a copy" — how it works
 
-Requesting a resource is a **manual fulfilment** flow. Nothing is emailed
-automatically, and there is no email provider wired into the app.
+Requesting a resource is a **manual fulfilment** flow. The firm gets an alert
+email for each request, but the document itself is never emailed
+automatically.
 
 1. A visitor clicks "Request a copy" on `/toolkits` and lands on
    `/toolkits/request/[slug]`.
 2. They submit name, phone, organisation email and what they need it for. The
-   request is stored in `toolkit_requests` and they see a confirmation dialog.
-3. A team member opens `/admin/toolkits`, reads the request, emails the file
-   from their own mailbox, and clicks **Mark sent**.
+   request is stored in `toolkit_requests`, they see a confirmation dialog, and
+   the firm's inbox gets a "Founders Hub request" alert.
+3. A team member emails the file from their own mailbox, then opens
+   `/admin/toolkits` and clicks **Mark sent**.
 
 Outstanding requests sort to the top and the heading shows a "to send" count.
 Mark sent shows a spinner and then a confirmation, so the click is never
