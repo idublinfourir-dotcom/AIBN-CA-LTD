@@ -51,6 +51,13 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
       className={`${archivo.variable} ${geistSans.variable} h-full antialiased`}
     >
+      <head>
+        {/* Reveal/ClipReveal render hidden until motion runs in the browser:
+            without JavaScript, show their content in its final state. */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important}`}</style>
+        </noscript>
+      </head>
       <body
         className="min-h-full flex flex-col bg-canvas font-sans text-ink-body"
         suppressHydrationWarning

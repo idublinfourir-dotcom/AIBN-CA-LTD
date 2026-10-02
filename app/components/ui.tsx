@@ -134,7 +134,9 @@ export function PageHero({
           <span className="animate-fade-up block">
             {breadcrumb ?? (eyebrow && <Eyebrow tone="dark">{eyebrow}</Eyebrow>)}
           </span>
-          <h1 className="animate-fade-up mt-6 flex flex-wrap items-center gap-3 font-display text-5xl font-bold leading-[0.98] tracking-[-0.025em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
+          {/* Fluid below sm: at a flat 48px, single words like "Transformation"
+              are wider than a 320-375px screen and got clipped. */}
+          <h1 className="animate-fade-up mt-6 flex flex-wrap items-center gap-3 font-display text-[length:clamp(2.25rem,11vw,3rem)] font-bold leading-[0.98] tracking-[-0.025em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
             {title}
           </h1>
           {lede && (

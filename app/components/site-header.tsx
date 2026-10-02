@@ -270,16 +270,20 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             Entrepreneur Toolkits link was added. */}
         <nav
           aria-label="Main"
-          className="mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
+          className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
         >
           <Logo onClick={closeMobile} />
 
           {/* xl breakpoint: with "Entrepreneur Toolkits" the full nav no longer
               fits at 1024px: below xl the hamburger menu takes over. */}
-          <div className="hidden items-center gap-6 xl:flex">
-            {/* Services mega-menu (CSS hover + focus-within) */}
+          <div className="hidden items-center gap-6 self-stretch xl:flex">
+            {/* Services mega-menu (CSS hover + focus-within). Unlike the other
+                dropdowns it is positioned against the <nav>, not its trigger:
+                a 64rem panel centred on a link this far left hung up to ~200px
+                off the left edge at 1280-1440px. The trigger fills the row's
+                height so hover holds while the pointer crosses to the panel. */}
             <div
-              className="group relative"
+              className="group flex items-center self-stretch"
               onMouseEnter={() => setServicesClosed(false)}
               onFocus={() => setServicesClosed(false)}
             >
@@ -305,7 +309,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               </Link>
 
               <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute left-1/2 top-[calc(100%-0.625rem)] z-50 w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   servicesClosed
                     ? "!invisible !opacity-0"
                     : ""
@@ -575,6 +579,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             })}
           </div>
 
+          {/* Below 360px the logo, account control and menu button don't fit
+              on one row, so the account control moves into the menu. */}
           <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-4">
             {user ? (
               <Link
@@ -582,7 +588,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                 aria-label={
                   user.role === "admin" ? "Admin dashboard" : "My dashboard"
                 }
-                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pr-4"
+                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 max-[360px]:hidden sm:pr-4"
               >
                 <span className="rounded-full ring-2 ring-primary-300/60 ring-offset-2 ring-offset-surface">
                   <Avatar user={user} size={34} />
@@ -599,7 +605,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex h-10 cursor-pointer items-center whitespace-nowrap rounded-none border border-line px-4 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                className="inline-flex h-10 cursor-pointer items-center whitespace-nowrap rounded-none border border-line px-4 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 max-[360px]:hidden"
               >
                 Sign in
               </Link>
@@ -639,10 +645,14 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
           </div>
         </nav>
 
+        {/* Height left under the header: the 4.5rem nav row, plus the 2.5rem
+            contact bar from md up (+0.25rem slack). dvh, not vh: on phones vh
+            includes the area behind the browser toolbar, which hid the last
+            items of the menu. */}
         {menuOpen && (
           <div
             id="mobile-menu"
-            className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-line bg-canvas px-5 py-4 xl:hidden"
+            className="max-h-[calc(100dvh-4.75rem)] overflow-y-auto border-t border-line bg-canvas px-5 py-4 md:max-h-[calc(100dvh-7.25rem)] xl:hidden"
           >
             <div className="flex flex-col gap-1">
               {/* Services accordion */}
@@ -809,6 +819,14 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               >
                 {site.phone}
               </a>
+              {/* Only below 360px, where it is gone from the header row. */}
+              <Link
+                href={user ? (user.role === "admin" ? "/admin" : "/portal") : "/login"}
+                className="rounded-none px-3 py-2.5 text-[15px] font-medium text-ink-body transition-colors duration-200 hover:bg-secondary-50 min-[360px]:hidden"
+                onClick={closeMobile}
+              >
+                {user ? (user.role === "admin" ? "Admin dashboard" : "My dashboard") : "Sign in"}
+              </Link>
               <Link
                 href="/contact"
                 className="mt-2 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-5 text-sm font-semibold text-white"
