@@ -148,9 +148,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `window.location.origin/auth/callback` (adapts per host). Google's authorized
   redirect URI is the **Supabase** callback (`https://<ref>.supabase.co/auth/v1/callback`),
   not app URL. Supabase **Auth → URL Configuration** must allow-list both
-  prod URL (`https://ca-farm.vercel.app/auth/callback`) and local
-  (`http://localhost:3000/**` — note **http**). Consent screen is External: add
-  test users or Publish.
+  the live domain's callback (`https://www.aibncharteredaccountants.ie/auth/callback`)
+  and local (`http://localhost:3000/**`: note **http**). Production is the
+  Vercel project `aibn-ca-ltd` on that domain; `ca-farm.vercel.app` no longer
+  exists. Consent screen is External: add test users or Publish.
 - **Role in JWT:** `custom_access_token_hook` (DB function) stamps a `user_role`
   claim from `profiles`; enable "Customize Access Token (JWT) Claims" hook in
   dashboard to activate. `getSessionUser` prefers that claim, falls back to
