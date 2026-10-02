@@ -268,7 +268,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setSide(s)}
-                  className={`flex-1 cursor-pointer rounded-none px-3 py-2 text-xs font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
+                  className={`flex-1 cursor-pointer rounded-none px-3 py-2 text-xs font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
                     active ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink"
                   }`}
                 >

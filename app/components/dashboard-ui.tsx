@@ -3,7 +3,7 @@ import Link from "next/link";
 import { signOutAction } from "../auth/actions";
 import { LogoutButton } from "./logout-button";
 import { Icon } from "./dashboard-icons";
-import { DashNav, type DashNavItem } from "./dashboard-nav";
+import { DashMobileNav, DashNav, type DashNavItem } from "./dashboard-nav";
 
 /** First letters of up to two words: "Jane Doe" → "JD", "jane@x.com" → "J". */
 export function initialsOf(name: string | null | undefined, email: string) {
@@ -80,51 +80,58 @@ export function DashboardShell({
   const initials = initialsOf(user.name, user.email);
   const badgeLabel = badge === "admin" ? "Admin" : "Client";
 
+  // Rendered by the desktop sidebar and, below md, by the phone drawer.
+  const sidebar = (
+    <>
+      <Link
+        href="/"
+        className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5 transition-colors duration-200 hover:bg-white/5"
+      >
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-primary-500 font-display text-[10px] font-semibold tracking-tight text-white">
+          AIBN
+        </span>
+        <span className="flex flex-col leading-tight">
+          <span className="font-display text-base font-semibold tracking-tight">
+            AIBN
+          </span>
+          <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/40">
+            {title}
+          </span>
+        </span>
+      </Link>
+
+      <DashNav items={navItems} ariaLabel={areaLabel} dueHrefs={dueHrefs} />
+
+      <div className="mt-auto border-t border-white/10 p-3">
+        <div className="mb-2 flex items-center gap-3 px-3 py-2">
+          <Avatar initials={initials} className="h-8 w-8 text-[11px]" />
+          <span className="min-w-0 leading-tight">
+            {user.name && (
+              <span className="block truncate text-sm font-medium text-white">
+                {user.name}
+              </span>
+            )}
+            <span className="block truncate text-xs text-white/45">
+              {user.email}
+            </span>
+          </span>
+        </div>
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-none px-3 py-2 text-sm text-white/55 transition-colors duration-200 hover:bg-white/5 hover:text-white"
+        >
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          Back to site
+        </Link>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex min-h-screen bg-surface-muted">
       {/* Sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col bg-navy-900 text-white md:flex">
-        <Link
-          href="/"
-          className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5 transition-colors duration-200 hover:bg-white/5"
-        >
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-primary-500 font-display text-[10px] font-semibold tracking-tight text-white">
-            AIBN
-          </span>
-          <span className="flex flex-col leading-tight">
-            <span className="font-display text-base font-semibold tracking-tight">
-              AIBN
-            </span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/40">
-              {title}
-            </span>
-          </span>
-        </Link>
-
-        <DashNav items={navItems} ariaLabel={areaLabel} dueHrefs={dueHrefs} />
-
-        <div className="mt-auto border-t border-white/10 p-3">
-          <div className="mb-2 flex items-center gap-3 px-3 py-2">
-            <Avatar initials={initials} className="h-8 w-8 text-[11px]" />
-            <span className="min-w-0 leading-tight">
-              {user.name && (
-                <span className="block truncate text-sm font-medium text-white">
-                  {user.name}
-                </span>
-              )}
-              <span className="block truncate text-xs text-white/45">
-                {user.email}
-              </span>
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-none px-3 py-2 text-sm text-white/55 transition-colors duration-200 hover:bg-white/5 hover:text-white"
-          >
-            <Icon name="arrowLeft" className="h-4 w-4" />
-            Back to site
-          </Link>
-        </div>
+        {sidebar}
       </aside>
 
       {/* Main column */}
@@ -132,9 +139,7 @@ export function DashboardShell({
         {/* Topbar */}
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-line bg-white px-5 sm:px-8">
           <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-navy-900 font-display text-[10px] font-semibold tracking-tight text-primary-400 md:hidden">
-              AIBN
-            </span>
+            <DashMobileNav>{sidebar}</DashMobileNav>
             <h1 className="font-display text-lg font-semibold tracking-tight text-ink">
               {title}
             </h1>

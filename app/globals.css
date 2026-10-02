@@ -91,6 +91,21 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+/* iOS Safari zooms the whole page when a focused field's text is under 16px,
+   and most fields here are text-sm. On touch devices, lift them to 16px.
+   Keyed on the pointer rather than width, because landscape phones and iPads
+   zoom too. Unlayered, so it outranks Tailwind's utility classes; fields
+   already sized above 16px (the reset-code input is text-lg) keep their size. */
+@media (pointer: coarse) {
+  :is(
+      input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"]),
+      select,
+      textarea
+    ):not(.text-lg, .text-xl, .text-2xl, .text-3xl) {
+    font-size: 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

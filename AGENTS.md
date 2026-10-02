@@ -75,6 +75,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 - Functional React components; default exports for pages/layouts.
 - Tailwind utility classes only — use brand tokens (`canvas`, `surface`, `ink`, `ink-body`, `muted`, `primary-*`, `secondary-*`, `navy-*`), not arbitrary hex in components.
+- Form fields can stay `text-sm`: `globals.css` lifts input/select/textarea text
+  to 16px on touch devices (`pointer: coarse`), because iOS zooms the page on
+  focusing anything smaller. Don't override it with `!important`.
 - Display headings: `font-display`; body: default `font-sans`.
 - Preserve accessibility: skip link, semantic HTML, focus states.
 - SEO: use `metadata` exports on pages; site URL + defaults in `app/layout.tsx`.
@@ -87,8 +90,16 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   IntersectionObserver. Reuse primitives in `app/components/` before adding new.
 - Animate `transform` / `opacity` only; custom ease-out is `ease-snappy`
   token (`cubic-bezier(0.23,1,0.32,1)`); UI ≤300ms, reveals ~600–900ms.
-- Every motion respects `prefers-reduced-motion` (drop movement, keep content);
-  SSR renders final/visible state for SEO + JS-off.
+- Every motion respects `prefers-reduced-motion` (drop movement, keep content).
+  `Reveal`/`ClipReveal` server-render their **hidden** start state, because the
+  server can't know the visitor's setting; reduced motion then shows content via
+  an instant `animate` on mount, and a `<noscript>` style in `app/layout.tsx`
+  (keyed on `data-reveal`) shows it without JS. Keep `initial` identical on
+  server and client: setting `initial={false}` for reduced motion left the
+  server's `opacity: 0` in place and blanked whole sections for those visitors.
+- An element's own `clip-path` hides it from IntersectionObserver in Chromium
+  (ratio 0), so `whileInView` on a fully clipped element never fires. Observe an
+  unclipped wrapper and animate the inside, as `ClipReveal` does.
 - **`transform` on ancestor breaks `position: sticky` on descendants** — never
   wrap sticky-aside grid in `Reveal` (or any transformed element).
 - Header is **`sticky top-0` on `<header>` element itself** (not inner
@@ -159,6 +170,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   cookie server-side). Do **not** read session in browser for header
   — SSR cookie not reliably readable client-side. `/admin` and `/portal` render
   own shells (sidebar + topbar); `ChromeGate` hides public header/footer there.
+  Below `md` the sidebar is hidden and `DashMobileNav` (in `dashboard-nav.tsx`)
+  opens the same sidebar content as a drawer from the topbar, so phones keep
+  full navigation.
 - **Two data paths by design:** `lib/db.ts` (`pg`) for contact write, admin
   enquiries read, all role lookups; `supabase-js` for auth/session.
 - **RLS deny-all is intentional on 12 tables** — `enquiries`,

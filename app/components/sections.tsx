@@ -46,7 +46,9 @@ export function Hero() {
               Chartered Accountants &amp; Advisors · Ireland
             </Eyebrow>
           </span>
-          <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
+          {/* Fluid below sm: at a flat 48px, single words like "Transformation"
+              are wider than a 320-375px screen and got clipped. */}
+          <h1 className="animate-fade-up mt-7 font-display text-[length:clamp(2.25rem,11vw,3rem)] font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
             Accountancy,{" "}
             <em className="text-primary-300 not-italic">rebuilt around AI.</em>
           </h1>
