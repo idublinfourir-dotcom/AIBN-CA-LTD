@@ -6,7 +6,7 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-Marketing site for **AIBN Chartered Accountants Ltd** — partner-led chartered accountancy practice (audit, tax, bookkeeping, payroll, advisory). UK copy + tone: professional, plain English, no jargon.
+Marketing site for **AIBN Chartered Accountants Ltd**, a partner-led chartered accountancy practice in Ireland (audit, tax, bookkeeping, payroll, advisory); the tax tools are Irish. British/Irish spelling; tone: professional, plain English, no jargon.
 
 
 
@@ -152,6 +152,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   and local (`http://localhost:3000/**`: note **http**). Production is the
   Vercel project `aibn-ca-ltd` on that domain; `ca-farm.vercel.app` no longer
   exists. Consent screen is External: add test users or Publish.
+- **Every `next` redirect parameter goes through `safeNextPath`**
+  (`app/lib/safe-redirect.ts`, unit-tested): the login action, `/auth/callback`
+  and `/auth/confirm`. Never hand-roll a "starts with `/` but not `//`" check:
+  browsers resolve `/\evil.example` and `/<tab>/evil.example` to an external
+  host, and that check passed both, which made `/login?next=` an open redirect
+  until 2026-10-17. The helper parses the value as a browser would and keeps it
+  only when it stays on this site.
 - **Role in JWT:** `custom_access_token_hook` (DB function) stamps a `user_role`
   claim from `profiles`; enable "Customize Access Token (JWT) Claims" hook in
   dashboard to activate. `getSessionUser` prefers that claim, falls back to
@@ -189,6 +196,27 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   public API tamper with tax rates. Each table carries a `comment on table`
   spelling this out. Only add a policy if a specific read moves to client-side
   `supabase-js`, and then scope it read-only to that need.
+- **Table grants and the Data API (Supabase change, 30 Oct 2026).** From that
+  date Supabase stops auto-granting `anon` / `authenticated` / `service_role`
+  on new `public` tables, and its notice says to add `grant` statements to
+  every migration. **Do not follow that advice here.** The app never uses the
+  Data API (no `supabase.from()` or `.rpc()` anywhere; supabase-js is for auth
+  only), and the `pg` connection logs in as `postgres`, the owner of every
+  table, which needs no grant. Granting those roles would leave enquiries and
+  the rate tables one RLS policy away from the public API. Live state, checked
+  read-only on 2026-10-17: none of the three roles holds any privilege on any
+  of the 13 `public` tables, and the default privileges for tables `postgres`
+  creates give them no select/insert/update/delete. A new table needs only
+  RLS enabled and its `comment on table`, as above.
+  - **Known gap, not yet fixed:** that hardening was applied by hand, not by a
+    migration. `db/schema.sql` has no `revoke`, and it also lacks
+    `grant select on public.profiles to supabase_auth_admin`, which the live
+    DB has and `custom_access_token_hook` needs (without it the hook swallows
+    the error and stamps every user `client`). An environment built from
+    `schema.sql` (new project, preview branch, `supabase db reset`) therefore
+    differs from production: admins see the client header there, though the
+    server guards still read the role from `profiles`. Fix: add the revokes and
+    that grant to `schema.sql`; it is a no-op on production.
 - **Secrets** live in `.env.local` locally — `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, **`SUPABASE_SERVICE_ROLE_KEY`** (server-only,
   never `NEXT_PUBLIC`), and the `SMTP_*` / `MAIL_*` keys. Same keys set in **Vercel**
@@ -435,8 +463,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   (spins up prod server on `:3100`). Specs: `site.spec.ts` (marketing pages,
   auth gating, login/signup/logout, role routing), `calculators.spec.ts` +
   `cgt.spec.ts` (public calculators + admin rate editors), `contact-wizard.spec.ts`
-  (wizard steps, FAQ hints, validation). Creates `pw-*@example.com` users/enquiries —
-  clean up via Supabase MCP after a run.
+  (wizard steps, FAQ hints, validation), `admin-reply-email.spec.ts` (admin reply
+  plus its email copy). The config captures every outbound email in a local SMTP
+  sink (`e2e/smtp-sink.mjs`), so no mail leaves the machine; run `npm run build`
+  first. `site.spec.ts` and `admin-reply-email.spec.ts` create and delete their
+  own `pw-*@example.com` users and enquiries. `contact-wizard.spec.ts` still
+  leaves `pw-wizard@example.com` enquiries behind: clean those up via Supabase
+  MCP after a run.
 
 ---
 

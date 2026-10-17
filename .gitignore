@@ -59,6 +59,6 @@ next-env.d.ts
 # brochure — local only, not published
 /brochure/
 
-# Generated Founders Hub documents. These live in Supabase Storage
-# (uploaded via /admin/toolkits), not in the repo.
+# Generated Founders Hub documents. The site never hosts them: the team keeps
+# them outside the repo and emails each copy by hand (see AGENTS.md).
 /Founders Hub/
