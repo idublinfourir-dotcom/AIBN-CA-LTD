@@ -6,7 +6,7 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-Marketing site for **AIBN Chartered Accountants Ltd** — partner-led chartered accountancy practice (audit, tax, bookkeeping, payroll, advisory). UK copy + tone: professional, plain English, no jargon.
+Marketing site for **AIBN Chartered Accountants Ltd**, a partner-led chartered accountancy practice in Ireland (audit, tax, bookkeeping, payroll, advisory); the tax tools are Irish. British/Irish spelling; tone: professional, plain English, no jargon.
 
 
 
@@ -152,6 +152,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   and local (`http://localhost:3000/**`: note **http**). Production is the
   Vercel project `aibn-ca-ltd` on that domain; `ca-farm.vercel.app` no longer
   exists. Consent screen is External: add test users or Publish.
+- **Every `next` redirect parameter goes through `safeNextPath`**
+  (`app/lib/safe-redirect.ts`, unit-tested): the login action, `/auth/callback`
+  and `/auth/confirm`. Never hand-roll a "starts with `/` but not `//`" check:
+  browsers resolve `/\evil.example` and `/<tab>/evil.example` to an external
+  host, and that check passed both, which made `/login?next=` an open redirect
+  until 2026-10-17. The helper parses the value as a browser would and keeps it
+  only when it stays on this site.
 - **Role in JWT:** `custom_access_token_hook` (DB function) stamps a `user_role`
   claim from `profiles`; enable "Customize Access Token (JWT) Claims" hook in
   dashboard to activate. `getSessionUser` prefers that claim, falls back to
@@ -435,8 +442,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   (spins up prod server on `:3100`). Specs: `site.spec.ts` (marketing pages,
   auth gating, login/signup/logout, role routing), `calculators.spec.ts` +
   `cgt.spec.ts` (public calculators + admin rate editors), `contact-wizard.spec.ts`
-  (wizard steps, FAQ hints, validation). Creates `pw-*@example.com` users/enquiries —
-  clean up via Supabase MCP after a run.
+  (wizard steps, FAQ hints, validation), `admin-reply-email.spec.ts` (admin reply
+  plus its email copy). The config captures every outbound email in a local SMTP
+  sink (`e2e/smtp-sink.mjs`), so no mail leaves the machine; run `npm run build`
+  first. `site.spec.ts` and `admin-reply-email.spec.ts` create and delete their
+  own `pw-*@example.com` users and enquiries. `contact-wizard.spec.ts` still
+  leaves `pw-wizard@example.com` enquiries behind: clean those up via Supabase
+  MCP after a run.
 
 ---
 

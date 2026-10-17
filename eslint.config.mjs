@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local, gitignored brochure tooling: not part of the app.
+    "brochure/**",
   ]),
 ]);
 

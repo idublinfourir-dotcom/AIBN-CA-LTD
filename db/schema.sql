@@ -66,7 +66,7 @@ do $$ begin
 end $$;
 
 -- ── Ireland mortgage comparison ─────────────────────────────────────────────
--- Lender rate products shown on /tools/ireland, editable in /admin/mortgage-rates
+-- Lender rate products shown on /personal/mortgage, editable in /admin/mortgage-rates
 -- so a repricing never needs a code deploy. Seeded below only when empty.
 
 create table if not exists mortgage_products (
@@ -281,9 +281,10 @@ drop policy if exists auth_admin_read_roles on public.profiles;
 create policy auth_admin_read_roles on public.profiles
   for select to supabase_auth_admin using (true);
 
--- Creates the profile row on signup. THE ADMIN EMAIL ALLOW-LIST LIVES HERE:
--- add an email to the `in (...)` list to make that account an admin from its
--- first login. Existing accounts instead need:
+-- Creates the profile row on signup. THE ADMIN ADDRESS LIVES HERE: the single
+-- email compared in the `case` below becomes an admin from its first login and
+-- every other account is a client. Change it with a migration. An account that
+-- already exists also needs its row updated:
 --   update public.profiles set role = 'admin' where lower(email) = '<email>';
 create or replace function public.handle_new_user()
 returns trigger
