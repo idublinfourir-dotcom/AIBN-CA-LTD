@@ -196,6 +196,27 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   public API tamper with tax rates. Each table carries a `comment on table`
   spelling this out. Only add a policy if a specific read moves to client-side
   `supabase-js`, and then scope it read-only to that need.
+- **Table grants and the Data API (Supabase change, 30 Oct 2026).** From that
+  date Supabase stops auto-granting `anon` / `authenticated` / `service_role`
+  on new `public` tables, and its notice says to add `grant` statements to
+  every migration. **Do not follow that advice here.** The app never uses the
+  Data API (no `supabase.from()` or `.rpc()` anywhere; supabase-js is for auth
+  only), and the `pg` connection logs in as `postgres`, the owner of every
+  table, which needs no grant. Granting those roles would leave enquiries and
+  the rate tables one RLS policy away from the public API. Live state, checked
+  read-only on 2026-10-17: none of the three roles holds any privilege on any
+  of the 13 `public` tables, and the default privileges for tables `postgres`
+  creates give them no select/insert/update/delete. A new table needs only
+  RLS enabled and its `comment on table`, as above.
+  - **Known gap, not yet fixed:** that hardening was applied by hand, not by a
+    migration. `db/schema.sql` has no `revoke`, and it also lacks
+    `grant select on public.profiles to supabase_auth_admin`, which the live
+    DB has and `custom_access_token_hook` needs (without it the hook swallows
+    the error and stamps every user `client`). An environment built from
+    `schema.sql` (new project, preview branch, `supabase db reset`) therefore
+    differs from production: admins see the client header there, though the
+    server guards still read the role from `profiles`. Fix: add the revokes and
+    that grant to `schema.sql`; it is a no-op on production.
 - **Secrets** live in `.env.local` locally — `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, **`SUPABASE_SERVICE_ROLE_KEY`** (server-only,
   never `NEXT_PUBLIC`), and the `SMTP_*` / `MAIL_*` keys. Same keys set in **Vercel**
