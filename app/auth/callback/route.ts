@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabase/server";
 import { query } from "../../lib/db";
 import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
+import { safeNextPath } from "../../lib/safe-redirect";
 
 /**
  * OAuth (Google) redirect target. Exchanges the PKCE `code` for a session,
@@ -11,9 +12,7 @@ import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const rawNext = searchParams.get("next") ?? "";
-  const next =
-    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const next = safeNextPath(searchParams.get("next")) ?? "";
 
   /* Every failure below lands on the same /login?notice=oauth screen, so the
      only way to tell them apart afterwards is this log. Grep "[auth] oauth".

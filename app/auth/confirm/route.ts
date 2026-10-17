@@ -2,6 +2,7 @@ import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabase/server";
 import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
+import { safeNextPath } from "../../lib/safe-redirect";
 
 /* The only OTP type this app ever issues: app/signup/actions.ts builds every
    link with type=email. The value arrives in a URL and is therefore
@@ -23,8 +24,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const tokenHash = searchParams.get("token_hash");
   const type = parseOtpType(searchParams.get("type"));
-  const next = searchParams.get("next") ?? "/portal";
-  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/portal";
+  const safeNext = safeNextPath(searchParams.get("next")) ?? "/portal";
 
   if (tokenHash && type) {
     const supabase = await createClient();

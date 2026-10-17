@@ -4,15 +4,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
 import { query } from "../lib/db";
 import { loginErrorMessage } from "../lib/login-errors";
+import { safeNextPath } from "../lib/safe-redirect";
 
 export interface AuthState {
   error?: string;
   values?: { email?: string };
-}
-
-/** Only same-origin relative paths: blocks open-redirects via `next`. */
-function isSafe(path: string) {
-  return path.startsWith("/") && !path.startsWith("//");
 }
 
 export async function login(
@@ -47,9 +43,8 @@ export async function login(
 
   // Honor an explicit, safe redirect (set when the user was gated). Otherwise
   // route by role: admins land on /admin, everyone else on /portal.
-  if (requestedNext && isSafe(requestedNext)) {
-    redirect(requestedNext);
-  }
+  const next = safeNextPath(requestedNext);
+  if (next) redirect(next);
 
   // Look up role via the pg pool (bypasses RLS): reliable and independent of
   // the just-set session cookie that the RLS read path depends on.
