@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "../lib/supabase/guards";
 import { loadReviewStatus } from "../lib/editable-calculators";
+import { loadMailHealth } from "../lib/mail-failures";
 import { DashboardShell } from "../components/dashboard-ui";
 import type { DashNavItem } from "../components/dashboard-nav";
+import { MailHealthNotice } from "./mail-health-notice";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -25,7 +27,11 @@ const navItems: DashNavItem[] = [
 export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [user, reviews] = await Promise.all([requireAdmin(), loadReviewStatus()]);
+  const [user, reviews, mailHealth] = await Promise.all([
+    requireAdmin(),
+    loadReviewStatus(),
+    loadMailHealth(),
+  ]);
   const dueHrefs = reviews.filter((r) => r.due).map((r) => r.adminHref);
 
   return (
@@ -35,6 +41,7 @@ export default async function AdminLayout({
       badge="admin"
       navItems={navItems}
       dueHrefs={dueHrefs}
+      notice={<MailHealthNotice health={mailHealth} />}
       user={{
         email: user.email ?? "",
         name: (user.user_metadata?.full_name as string | undefined) ?? null,

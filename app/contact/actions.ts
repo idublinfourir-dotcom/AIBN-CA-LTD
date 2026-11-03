@@ -29,13 +29,18 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Best-effort: the DB row is the source of truth, so a failed email is logged
  * but doesn't fail the submission.
  */
-async function sendEnquiryAck(values: { name: string; email: string }) {
+async function sendEnquiryAck(
+  values: { name: string; email: string },
+  enquiryId: string,
+) {
   const sent = await sendMail({
     to: values.email,
     subject: ackSubject(),
     html: ackHtml({ name: values.name, firmName: site.name }),
     text: ackText({ name: values.name, firmName: site.name }),
     logPrefix: "[enquiry]",
+    kind: "enquiry-ack",
+    adminHref: `/admin/enquiries?id=${enquiryId}`,
   });
   if (sent) console.info("[enquiry] acknowledgement emailed");
 }
@@ -118,7 +123,7 @@ export async function submitEnquiry(
   // isn't blocked by the SMTP round-trips (best-effort). The alert carries the
   // saved message (capped like the row), so the inbox matches /admin.
   const origin = await emailOrigin();
-  after(() => sendEnquiryAck(values));
+  after(() => sendEnquiryAck(values, enquiryId));
   after(() =>
     notifyFirm(
       enquiryAlert({
@@ -132,6 +137,7 @@ export async function submitEnquiry(
         firmName: site.name,
       }),
       "[enquiry]",
+      `/admin/enquiries?id=${enquiryId}`,
     ),
   );
 
