@@ -66,6 +66,7 @@ export async function sendClientMessageAction(formData: FormData): Promise<void>
           firmName: site.name,
         }),
         "[portal]",
+        `/admin/enquiries?id=${id}`,
       ),
     );
   }

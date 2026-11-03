@@ -76,6 +76,8 @@ async function notifyClientByEmail(enquiryId: string, body: string) {
     html: replyHtml(input),
     text: replyText(input),
     logPrefix: "[enquiries]",
+    kind: "client-reply",
+    adminHref: `/admin/enquiries?id=${enquiryId}`,
   });
 
   // One line per successful send so the ops log shows which replies actually

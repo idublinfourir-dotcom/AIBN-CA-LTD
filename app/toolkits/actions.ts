@@ -165,6 +165,7 @@ export async function submitResourceRequestAction(
         firmName: site.name,
       }),
       "[toolkits]",
+      "/admin/toolkits",
     ),
   );
 

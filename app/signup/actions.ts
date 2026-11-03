@@ -155,6 +155,7 @@ export async function signup(
     html: confirmHtml(mail),
     text: confirmText(mail),
     logPrefix: "[signup]",
+    kind: "signup-confirm",
   });
 
   /* The link IS the second half of this transaction: an account that cannot be

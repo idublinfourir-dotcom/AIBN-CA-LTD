@@ -183,10 +183,11 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   full navigation.
 - **Two data paths by design:** `lib/db.ts` (`pg`) for contact write, admin
   enquiries read, all role lookups; `supabase-js` for auth/session.
-- **RLS deny-all is intentional on 12 tables** — `enquiries`,
+- **RLS deny-all is intentional on 13 tables**: `enquiries`,
   `enquiry_messages`, `rate_audit`, `calculator_settings`, `cgt_settings`,
   `cgt_multipliers`, `mortgage_settings`, `mortgage_products`, `tax_rates`,
-  `request_rate_limits`, `toolkit_resources`, `toolkit_requests` all keep
+  `request_rate_limits`, `toolkit_resources`, `toolkit_requests`,
+  `mail_failures` all keep
   **RLS enabled with no policy**: the public Supabase API (anon/`authenticated`)
   is denied; the server reaches them via the `pg` owner connection, which
   **bypasses RLS**. The security advisor's
@@ -220,8 +221,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - **Secrets** live in `.env.local` locally — `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, **`SUPABASE_SERVICE_ROLE_KEY`** (server-only,
   never `NEXT_PUBLIC`), and the `SMTP_*` / `MAIL_*` keys. Same keys set in **Vercel**
-  project env for prod. Never echo or commit them. Run Supabase security advisors
-  after any DDL.
+  project env for Production. The `SMTP_*` and `MAIL_FROM` keys were missing
+  there until 2026-11-03, so the live site sent no email at all before then.
+  Preview has none on purpose, so preview builds never send mail. Never echo or
+  commit them. Run Supabase security advisors after any DDL.
 - **Security headers** set in `next.config.ts` (`headers()`, all routes): CSP, HSTS
   (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. CSP allows
   `'unsafe-inline'` (no nonce yet) and dev-only `'unsafe-eval'` + localhost ws; it
@@ -352,6 +355,33 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   app password. **`smtppro.zoho.com` returns `554 5.7.8 Access Restricted` for
   this account** on 465 and 587 despite being what Zoho's docs recommend for
   custom domains: do not "fix" the host to smtppro.
+- **A failed send is never silent** (added 2026-11-03). That "logged no-op" is
+  how the live site sent nothing from launch to 2026-11-03 without anyone
+  noticing: enquiries saved, `/admin` looked healthy, and Vercel's Hobby plan
+  keeps logs for an hour. Now `sendMail` and `notifyFirm` also write a row to
+  `mail_failures` (`app/lib/mail-failures.ts`) for every skipped or refused
+  send, and the admin layout shows a red strip under the topbar on every
+  `/admin` page (`app/admin/mail-health-notice.tsx`):
+  - **"Email is switched off"** when `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` is
+    missing on this deployment. Read from the environment on each render, so
+    it cannot be dismissed; it clears when the settings are added.
+  - **"N emails could not be sent"** for open rows, listed newest first with
+    what each was and an Open link to the enquiry, until the admin presses
+    Dismiss (`app/admin/mail-actions.ts`).
+  - Every `sendMail` call names its `kind` (the type makes it required) and,
+    where there is one, the `adminHref` to follow up on. A new kind of email
+    gets a label in `MAIL_KIND_LABELS` (`app/lib/mail-health.ts`).
+  - Rows hold **no recipient, subject or body**: the enquiry they link to has
+    those. `detail` is the server's reply passed through `describeSmtpError`,
+    which replaces every email address, because refusals often quote the
+    recipient. Keep it that way.
+  - Rows carry `environment` (`VERCEL_ENV`, or `local` off Vercel) and each
+    deployment shows only its own. Dev, preview and production share one
+    database, and preview has no SMTP on purpose: without this, every preview
+    build's skipped sends would alarm the live admin.
+  - Recording and reading are best-effort: a failed write is logged and
+    dropped, and a failed read shows no warning, so the log can never break a
+    send or an admin page.
 - Every email body is composed in this repo, so its layout is reviewable and
   changes in a commit: `app/lib/reply-email.ts` (admin reply to a client),
   `app/lib/enquiry-email.ts` (acknowledgement to the enquirer),

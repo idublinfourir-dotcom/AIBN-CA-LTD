@@ -515,3 +515,32 @@ alter table public.toolkit_requests enable row level security;
 
 comment on table public.toolkit_requests is
   'Server-only Founders Hub file requests (lead PII). RLS deny-all is intentional; pg owner access bypasses RLS.';
+
+-- ── Failed-send log ─────────────────────────────────────────────────────────
+-- Every email the site skipped (no SMTP settings) or the server refused, so
+-- /admin can warn about it (app/lib/mail-failures.ts). No recipient, subject
+-- or body: `kind` says what it was, `admin_href` points at the enquiry, and
+-- `detail` has every address replaced. `environment` (VERCEL_ENV or 'local')
+-- keeps dev and preview failures out of the live admin's warning, since all
+-- of them share this database.
+
+create table if not exists mail_failures (
+  id           bigint generated always as identity primary key,
+  kind         text not null,
+  reason       text not null,
+  detail       text,
+  admin_href   text,
+  environment  text not null,
+  created_at   timestamptz not null default now(),
+  dismissed_at timestamptz
+);
+
+create index if not exists mail_failures_open_idx
+  on mail_failures (environment, created_at desc)
+  where dismissed_at is null;
+
+-- Deny-all like every application table above.
+alter table public.mail_failures enable row level security;
+
+comment on table public.mail_failures is
+  'Server-only log of emails the site failed to send (no addresses or bodies). RLS deny-all is intentional; pg owner access bypasses RLS.';

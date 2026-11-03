@@ -7,9 +7,14 @@
    this repo (see email-layout.ts), not in a provider's dashboard.
 
    Every send is best-effort. The caller has already committed its database row,
-   so a refused send is logged and swallowed rather than thrown. */
+   so a refused send is logged and swallowed rather than thrown. It is also
+   recorded (mail-failures.ts), because a log line alone was not enough: the
+   live site once ran for two months with no SMTP settings and nobody knew.
+   The admin sees every recorded failure on /admin until they dismiss it. */
 
 import nodemailer, { type Transporter } from "nodemailer";
+import { describeSmtpError, missingMailKeys, type MailKind } from "./mail-health";
+import { recordMailFailure } from "./mail-failures";
 
 export interface MailerConfig {
   host: string;
@@ -31,12 +36,7 @@ export function readMailerConfig(): MailerConfig | null {
   const pass = process.env.SMTP_PASS;
   const port = Number(process.env.SMTP_PORT ?? 465);
 
-  const missing = [
-    !host && "SMTP_HOST",
-    !user && "SMTP_USER",
-    !pass && "SMTP_PASS",
-  ].filter(Boolean);
-
+  const missing = missingMailKeys(process.env);
   if (missing.length > 0) {
     console.warn(`[mailer] SMTP not configured (missing ${missing.join(", ")})`);
     return null;
@@ -87,12 +87,21 @@ export async function sendMail(opts: {
   html: string;
   text: string;
   logPrefix: string;
+  /** What this email is, for the admin's failure warning. */
+  kind: MailKind;
+  /** Where in /admin to follow up if it fails, e.g. the enquiry. */
+  adminHref?: string;
   /** Overrides MAIL_REPLY_TO for this one message. */
   replyTo?: string;
 }): Promise<boolean> {
   const config = readMailerConfig();
   if (!config) {
     console.warn(`${opts.logPrefix} no SMTP config; skipping email`);
+    await recordMailFailure({
+      kind: opts.kind,
+      reason: "not_configured",
+      adminHref: opts.adminHref,
+    });
     return false;
   }
 
@@ -108,6 +117,12 @@ export async function sendMail(opts: {
     return true;
   } catch (err) {
     console.error(`${opts.logPrefix} SMTP send failed:`, err);
+    await recordMailFailure({
+      kind: opts.kind,
+      reason: "refused",
+      detail: describeSmtpError(err),
+      adminHref: opts.adminHref,
+    });
     return false;
   }
 }
@@ -122,13 +137,22 @@ export async function sendMail(opts: {
 export async function notifyFirm(
   alert: { subject: string; text: string; html: string },
   logPrefix: string,
+  /** Where in /admin the alert points, kept if the alert fails. */
+  adminHref?: string,
 ): Promise<boolean> {
   const config = readMailerConfig();
   if (!config) {
     console.warn(`${logPrefix} no SMTP config; skipping firm alert`);
+    await recordMailFailure({ kind: "firm-alert", reason: "not_configured", adminHref });
     return false;
   }
-  const sent = await sendMail({ ...alert, to: config.notifyTo, logPrefix });
+  const sent = await sendMail({
+    ...alert,
+    to: config.notifyTo,
+    logPrefix,
+    kind: "firm-alert",
+    adminHref,
+  });
   if (sent) console.info(`${logPrefix} firm alert emailed`);
   return sent;
 }

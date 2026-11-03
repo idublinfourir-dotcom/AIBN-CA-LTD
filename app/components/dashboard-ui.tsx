@@ -64,6 +64,7 @@ export function DashboardShell({
   navItems,
   dueHrefs,
   user,
+  notice,
   children,
 }: {
   /** Topbar heading, e.g. "Admin console". */
@@ -75,6 +76,9 @@ export function DashboardShell({
   /** Nav hrefs flagged with a "review due" dot. */
   dueHrefs?: string[];
   user: { email: string; name?: string | null };
+  /** Full-width strip under the topbar on every page, e.g. the admin's
+      email warning. Nothing renders when it is null. */
+  notice?: ReactNode;
   children: ReactNode;
 }) {
   const initials = initialsOf(user.name, user.email);
@@ -164,6 +168,8 @@ export function DashboardShell({
             </form>
           </div>
         </header>
+
+        {notice}
 
         {/* Content */}
         <div className="flex-1 p-5 sm:p-8">{children}</div>

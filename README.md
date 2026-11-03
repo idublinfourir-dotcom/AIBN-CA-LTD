@@ -55,7 +55,7 @@ in the Vercel project settings. Never commit values or paste them anywhere.
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | yes | Supabase publishable key (browser-safe) |
 | `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-only. Signup and password reset use the Admin API |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | for email | Outbound SMTP. Without them the site still works and skips email |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | for email | Outbound SMTP. Without them the site still works and skips email, and `/admin` says "Email is switched off" |
 | `MAIL_FROM`, `MAIL_REPLY_TO` | no | Default to `SMTP_USER` |
 | `FIRM_NOTIFY_TO` | no | Where firm alerts go. Defaults to the Reply-To mailbox |
 | `SITE_URL` | no | Override the host used in emailed links (e.g. a staging site) |
@@ -117,7 +117,9 @@ Short version; `AGENTS.md` has the detail and the reasons.
 - **Email.** Signup confirmations, password-reset codes, enquiry
   acknowledgements, admin replies and firm alerts are all built in this repo
   (`app/lib/*-email.ts`, sharing `email-layout.ts`) and sent over SMTP. Sends
-  never block the page, and a failed send never loses the saved data.
+  never block the page, and a failed send never loses the saved data. A
+  skipped or refused send is recorded in `mail_failures` and shown as a red
+  warning on every `/admin` page, with a link to the enquiry, until dismissed.
 - **Signup and password reset.** Supabase creates the token; this app emails
   it. Password reset uses a typed code rather than a link.
 - **Calculator rates.** Each calculator has its rates in code as a default,

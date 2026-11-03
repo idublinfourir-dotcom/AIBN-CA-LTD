@@ -127,6 +127,7 @@ export async function requestResetCode(
     html: resetHtml(mail),
     text: resetText(mail),
     logPrefix: "[reset]",
+    kind: "password-reset",
   });
 
   /* Best-effort, unlike the signup send. There is no half-made account to roll
