@@ -161,6 +161,9 @@ clean up afterwards. Note that `npm install` removes Playwright again.
   passes.
 - To confirm a change is live, look for it on the live domain itself rather
   than trusting the deployment list.
+- **Web Analytics** covers public pages only, never `/admin` or `/portal`. It
+  needs the switch in the Vercel dashboard (Project, Analytics) as well as the
+  code. Hobby includes 50,000 events a month and pauses collection past that.
 
 ## Database
 

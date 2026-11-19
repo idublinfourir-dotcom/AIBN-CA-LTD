@@ -7,10 +7,12 @@ const supabaseWss = supabaseHttps.replace(/^https:/, "wss:");
 // Content-Security-Policy. Scripts/styles use 'unsafe-inline' because the app
 // doesn't (yet) wire per-request nonces through Next's RSC bootstrap; the policy
 // still blocks framing, foreign script/connect origins, and plugins. 'unsafe-eval'
-// and localhost websockets are dev-only (Turbopack HMR).
+// and localhost websockets are dev-only (Turbopack HMR). In production Vercel
+// Web Analytics loads from this origin; only `next dev` loads its debug script
+// from va.vercel-scripts.com (it logs, never sends).
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval' https://va.vercel-scripts.com" : ""}`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data: blob: https://lh3.googleusercontent.com https://images.unsplash.com`,
   `font-src 'self'`,

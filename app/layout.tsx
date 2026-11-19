@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Geist } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "./components/site-header";
 import { SiteFooter } from "./components/site-footer";
 import { BackToTop } from "./components/back-to-top";
@@ -78,6 +79,10 @@ export default async function RootLayout({
         <ChromeGate>
           <SiteFooter />
           <BackToTop />
+          {/* Vercel Web Analytics, public pages only: inside ChromeGate it
+              unmounts on /admin and /portal, and it sends the pathname
+              without the query string. */}
+          <Analytics />
         </ChromeGate>
       </body>
     </html>
