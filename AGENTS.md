@@ -229,6 +229,14 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. CSP allows
   `'unsafe-inline'` (no nonce yet) and dev-only `'unsafe-eval'` + localhost ws; it
   allow-lists Supabase (`connect-src`) and Google avatar / Unsplash image hosts.
+- **Vercel Web Analytics** (`<Analytics />` from `@vercel/analytics/next` in
+  `app/layout.tsx`) sits inside the footer's `ChromeGate` on purpose: it unmounts
+  on `/admin` and `/portal`, so signed-in activity is never sent to Vercel. It
+  sends the pathname without the query string and loads from this origin, so the
+  CSP needed no new host (only `next dev` allows `va.vercel-scripts.com`, for the
+  package's debug script). It also has to be switched on in the Vercel dashboard
+  (Project, Analytics, Enable). `e2e/site.spec.ts` checks the tracked and
+  untracked areas.
 
 ### Editable calculator rates (CGT, VAT, Corp Tax, R&D, Capital Allowances, CAT)
 
