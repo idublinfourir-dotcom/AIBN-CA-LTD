@@ -160,6 +160,9 @@ clean up afterwards. Note that `npm install` removes Playwright again.
   behind Vercel login.
 - **A merge to `main` goes straight to production.** Merge only after CI
   passes.
+- Server functions run in **Dublin** (`dub1`, set in `vercel.json`), next to the
+  Supabase database (`eu-west-1`) and most visitors. Vercel's default is
+  Washington (`iad1`), which put every page render across the Atlantic.
 - To confirm a change is live, look for it on the live domain itself rather
   than trusting the deployment list.
 - **Web Analytics** covers public pages only, never `/admin` or `/portal`. It
