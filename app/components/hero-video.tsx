@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 
 export type HeroClip = { src: string; poster: string };
 
@@ -20,6 +21,8 @@ export function HeroVideo({
   const [index, setIndex] = useState(0);
   const [allowMotion, setAllowMotion] = useState(true);
   const refs = useRef<(HTMLVideoElement | null)[]>([]);
+  // The first poster is the homepage's largest paint: fetch it before the video.
+  preload(clips[0].poster, { as: "image", fetchPriority: "high" });
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -65,7 +68,9 @@ export function HeroVideo({
           autoPlay={i === 0}
           muted
           playsInline
-          preload={i === 0 ? "auto" : "metadata"}
+          // Later clips load when their turn comes (their poster shows meanwhile),
+          // so they don't compete with the first paint.
+          preload={i === 0 ? "auto" : "none"}
           tabIndex={-1}
           onEnded={() => setIndex((n) => (n + 1) % clips.length)}
         >

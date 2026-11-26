@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   },
   description:
     "AIBN Chartered Accountants Ltd is a partner-led chartered accountancy practice. Audit, tax, bookkeeping, payroll and advisory for founders, family firms and growing teams.",
+  // "./" resolves to each page's own path on metadataBase, so every page
+  // declares its www URL (without query string) as the one to index.
+  alternates: { canonical: "./" },
   openGraph: {
     siteName: "AIBN Chartered Accountants Ltd",
     type: "website",

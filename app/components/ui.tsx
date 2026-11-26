@@ -120,6 +120,11 @@ export function PageHero({
   const style: CSSProperties = { backgroundImage: `url(${images[image]})` };
   return (
     <section className="relative isolate overflow-hidden bg-navy-900 text-white">
+      {/* A CSS background is found only after the stylesheet applies, and it is
+          usually the page's largest paint. React hoists this <link> into the
+          <head>. (ReactDOM.preload() from a server component only reached the
+          RSC payload, not the HTML, on Next 16.4.) */}
+      <link rel="preload" as="image" href={images[image]} fetchPriority="high" />
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20 bg-cover bg-center"
