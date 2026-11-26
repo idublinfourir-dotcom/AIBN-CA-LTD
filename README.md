@@ -154,7 +154,8 @@ clean up afterwards. Note that `npm install` removes Playwright again.
 ## Deployment
 
 - Hosted on **Vercel** (project `aibn-ca-ltd`). `aibncharteredaccountants.ie`
-  redirects to the `www` host.
+  redirects to the `www` host, and so does Vercel's own `aibn-ca-ltd.vercel.app`
+  (a rule in `next.config.ts`), so search engines see one copy of the site.
 - A push to any branch or PR gets a Preview deployment. Preview URLs sit
   behind Vercel login.
 - **A merge to `main` goes straight to production.** Merge only after CI

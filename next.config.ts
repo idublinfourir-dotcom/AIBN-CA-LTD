@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { site } from "./app/lib/content";
 
 const isDev = process.env.NODE_ENV !== "production";
 const supabaseHttps = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -56,6 +57,16 @@ const nextConfig: NextConfig = {
       {
         source: "/tools/ireland",
         destination: "/personal/mortgage",
+        permanent: true,
+      },
+      // Vercel's free production address serves the whole site too, which is a
+      // duplicate search engines can index. Send it to the real domain, same
+      // path and query. Next anchors the host value (^...$), so look-alike
+      // hosts and per-deployment preview URLs don't match.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "aibn-ca-ltd\\.vercel\\.app" }],
+        destination: `${site.url}/:path*`,
         permanent: true,
       },
     ];
