@@ -106,6 +106,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   div — inner sticky child fills short parent, can't stick).
 - Photos = CSS `background-image` from `lib/images.ts` over gradient scrim
   (no `next/image` remote config); verify any new Unsplash URL returns 200.
+  `PageHero` renders a `<link rel="preload" as="image">` for its photo, which
+  React hoists into `<head>`: that photo is usually the page's largest paint.
+  `ReactDOM.preload()` from a server component only reached the RSC payload,
+  not the HTML, on Next 16.4, so keep the `<link>`.
+- Homepage hero clips (`public/hero-*.mp4` / `.jpg`) have a size budget in
+  `app/lib/hero-media-budget.test.ts`, which also holds the ffmpeg command
+  for re-encoding a new clip (720p H.264, faststart, no audio).
 
 ### Auth & data
 
